@@ -2,11 +2,11 @@
   <div class="login">
     <div class="login-box">
       <div class="logo">
-        <img src="../../assets/logo.png" alt="logo">
+        <img src="../../assets/logo.png" alt="logo" style="width: 400px">
       </div>
       <div class="form">
         <div class="form-title">
-          <p>用户登录</p>
+          <div class="title">用户登录</div>
           <div>一天的开始</div>
         </div>
       </div>
@@ -30,5 +30,27 @@ export default {
   height: 100%;
   background:  url('../../assets/login-bg.png') no-repeat;
   background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .login-box {
+    width: 800px;
+    height: 400px;
+    display: flex;
+    .logo {
+      background: #fff;
+      display: flex;
+      align-items: center;
+    }
+    .form {
+      width: 100%;
+      border-left: 1px solid #333;
+      background: #fff;
+      .title {
+        color:#7F7F7F;
+        font-size:36px
+      }
+    }
+  }
 }
 </style>

@@ -18,5 +18,20 @@ body, html {
   margin: 0;
   padding: 0
 }
+ol, ul {
+list-style-image:none;
+list-style-position:outside;
+list-style-type:none;
+}
+
+body, dl, dt, dd, ul, ol, li, pre, form, fieldset, input, p, blockquote, th, td {
+font-weight:400;
+margin:0;
+padding:0;
+}
+h1, h2, h3, h4, h4, h5 {
+margin:0;
+padding:0;
+}
 
 </style>
