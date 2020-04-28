@@ -3,8 +3,8 @@
     <MainTop />
     <div class="info-table">
       <div>
-        <el-input placeholder="请输入姓名" v-model="name"></el-input>
-        <el-select placeholder="请选择单位" v-model="unit" style="margin-left: 20px">
+        <el-input placeholder="请输入姓名" v-model="name" clearable></el-input>
+        <el-select placeholder="请选择单位" v-model="unit" style="margin-left: 20px" clearable>
           <el-option v-for="(item, index) in unitOptions" :key="index" :value="item"></el-option>
         </el-select>
         <el-button style="margin-left:20px" @click="search">查询</el-button>
