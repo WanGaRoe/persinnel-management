@@ -10,28 +10,32 @@
         <el-button style="margin-left:20px" @click="search">查询</el-button>
       </div>
       <!-- 表格 -->
-      <el-table
-        :data="tableData"
-        style="width: 100%">
-        <el-table-column prop="name" label="姓名"></el-table-column>
-        <el-table-column prop="gender" label="性别"></el-table-column>
-        <el-table-column prop="age" label="年龄"></el-table-column>
-        <el-table-column prop="unit" label="单位"></el-table-column>
-        <el-table-column prop="type" label="工种"></el-table-column>
-        <el-table-column prop="date" label="入职日期"></el-table-column>
-        <el-table-column label="操作" width="100">
-          <template slot-scope="scope">
-            <el-button @click="handleLook(scope.row)" type="text" size="small">查看</el-button>
-            <el-button type="text" size="small">编辑</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <div class="table">
+        <el-table
+          :data="tableData"
+          style="width: 100%">
+          <el-table-column prop="name" label="姓名"></el-table-column>
+          <el-table-column prop="gender" label="性别"></el-table-column>
+          <el-table-column prop="age" label="年龄"></el-table-column>
+          <el-table-column prop="unit" label="单位"></el-table-column>
+          <el-table-column prop="type" label="工种"></el-table-column>
+          <el-table-column prop="date" label="入职日期"></el-table-column>
+          <el-table-column label="操作" width="100">
+            <template slot-scope="scope">
+              <el-button @click="handleLook(scope.row)" type="text" size="small">查看</el-button>
+              <el-button type="text" size="small">编辑</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
       <!-- 分页 -->
-      <el-pagination
-        :current-page="pageIndex"
-        @current-change="currentChange"
-        layout="prev, pager, next"
-        :total="tableData.length"></el-pagination>
+      <div class="pagination">
+        <el-pagination
+          :current-page="pageIndex"
+          @current-change="currentChange"
+          layout="prev, pager, next"
+          :total="tableData.length"></el-pagination>
+      </div>
     </div>
   </div>
 </template>
@@ -107,12 +111,18 @@ export default {
     .el-input {
       width: 300px;
     }
-    .el-table {
+    .table {
       margin-top: 40px;
+      box-sizing: border-box;
       th {
         font-family: 'Microsoft YaHei';
         font-weight: bold !important;
       }
+    }
+    .pagination {
+      text-align: right;
+      margin-top: 20px;
+      font-size: 18px;
     }
   }
 }
