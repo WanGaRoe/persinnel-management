@@ -3,7 +3,7 @@
     <div><img src="../../assets/head.png" alt=""></div>
     <div class="name" v-if="!isEdit">{{userName}}<i @click="toggleEdit" class="el-icon-edit-outline" style="margin-left: 10px;cursor:pointer"></i></div>
     <div class="name" v-else><el-input v-model="userName" style="width:80%"></el-input><i @click="toggleEdit" class="el-icon-circle-check" style="margin-left: 10px;cursor:pointer"></i></div>
-    <div :class="{'other':true, 'active': otherActive}">其它</div>
+    <div :class="{'other':true, 'active': otherActive}" @click="handleOther">其它</div>
   </div>
 </template>
 
@@ -21,6 +21,9 @@ export default {
     // 编辑姓名
     toggleEdit () {
       this.isEdit = !this.isEdit
+    },
+    handleOther () {
+      this.otherActive = true
     }
   }
 }
@@ -41,11 +44,10 @@ export default {
     margin-top: 200px;
     font-size: 28px;
     color: #999;
-    width: 80%;
     text-align: center;
     height: 60px;
+    width: 100%;
     line-height: 60px;
-    margin-left: 66px;
     cursor: pointer;
     &.active {
       color: #000;
