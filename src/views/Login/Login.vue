@@ -64,7 +64,7 @@ export default {
   name: 'Login',
   data () {
     return {
-      formIndex: 2, // 控制表单切换
+      formIndex: 1, // 控制表单切换
       forgetBtn: '下一步', // 找回密码按钮显示文字
       loginTitle: '用户登录', // 登录标题
       rememberPwd: false, // 是否记住密码
@@ -105,6 +105,7 @@ export default {
     // 登录
     login () {
       console.log('login')
+      this.$router.push('/home')
     },
 
     // 获取验证码

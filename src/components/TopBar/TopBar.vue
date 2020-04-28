@@ -10,8 +10,11 @@
           <div @click="handleClickMenu(item)" style="height:100%">{{ item.name }}</div>
         </div>
       </div>
-      <div></div>
-
+      <div class="exit">
+        <div class="menu-item">
+          <div @click="exit" style="height:100%">退出系统<img src="../../assets/exit.svg" alt="" style="vertical-align:text-top;margin-left:4px"></div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -45,9 +48,11 @@ export default {
   methods: {
     // 点击上方菜单
     handleClickMenu (menu) {
-      console.log(menu)
       this.activeId = menu.id
-      // this.$router.push(menu.path)
+      this.$router.push(menu.url)
+    },
+    exit () {
+      this.$router.push('/login')
     }
   }
 }
@@ -58,7 +63,7 @@ export default {
   height: 120px;
   line-height: 120px;
   background: rgba(73, 67, 57, 1);
-  padding: 0 100px;
+  padding: 0 300px 0 100px;
   display: flex;
   .content {
     font-size: 36px;
@@ -66,10 +71,15 @@ export default {
     margin-left: 30px;
   }
   .menu {
+    flex: 1;
     display: flex;
+    justify-content: space-between;
     margin-left: 60px;
-    font-size: 30px;
+    font-size: 32px;
     color: #fff;
+    .menu-box {
+      display: flex;
+    }
     .menu-item {
       height: 100%;
       width: 200px;
