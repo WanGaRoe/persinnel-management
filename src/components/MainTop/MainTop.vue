@@ -7,6 +7,7 @@
         <div class="content">在职人数</div>
       </div>
     </div>
+    
     <div class="item">
       <div class="img"><img src="../../assets/newWork.png" alt=""></div>
       <div class="text">

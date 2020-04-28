@@ -17,6 +17,7 @@ export default {
       otherActive: false // 控制其他选中
     }
   },
+  
   methods: {
     // 编辑姓名
     toggleEdit () {

@@ -12,6 +12,7 @@
   color: #2c3e50;
   height: 100%;
   min-width: 1920px;
+  
 }
 
 body, html {
