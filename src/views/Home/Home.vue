@@ -8,9 +8,10 @@
           <el-date-picker
             v-model="monthCount"
             type="month"
+            clearable
             placeholder="选择月">
           </el-date-picker>
-          <el-select v-model="monthInOut" style="margin-left: 20px">
+          <el-select v-model="monthInOut" style="margin-left: 20px" clearable>
             <el-option value="调入">调入</el-option>
             <el-option value="调出">调出</el-option>
           </el-select>
@@ -22,9 +23,10 @@
           <el-date-picker
             v-model="yearCount"
             type="year"
+            clearable
             placeholder="选择年">
           </el-date-picker>
-          <el-select v-model="yearInOut" style="margin-left: 20px">
+          <el-select v-model="yearInOut" style="margin-left: 20px" clearable>
             <el-option value="调入">调入</el-option>
             <el-option value="调出">调出</el-option>
           </el-select>
@@ -45,7 +47,7 @@ export default {
       monthCount: '',
       yearCount: '',
       monthInOut: '',
-      yearInout: ''
+      yearInOut: ''
     }
   },
   components: {
