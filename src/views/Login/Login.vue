@@ -11,14 +11,14 @@
         </div>
         <div class="form-input">
           <!-- 登录 -->
-          <el-form :model="form" ref="loginForm" :rules="loginRules" v-if="formIndex === 1">
+          <el-form :model="form" ref="loginForm" :rules="loginRules" v-show="formIndex === 1">
             <el-form-item prop="email">
               <i class="el-icon-user form-icon"></i>
-              <el-input type="text" placeholder="请输入邮箱" :value="form.email"></el-input>
+              <el-input type="text" placeholder="请输入邮箱" v-model="form.email"></el-input>
             </el-form-item>
             <el-form-item prop="password">
               <i class="el-icon-lock form-icon"></i>
-              <el-input type="password" placeholder="请输入密码" :value="form.password"></el-input>
+              <el-input type="password" placeholder="请输入密码" v-model="form.password"></el-input>
             </el-form-item>
             <div style="padding:0 40px;display:flex;justify-content:space-between">
               <el-checkbox :vlue="rememberPwd">记住密码</el-checkbox>
@@ -26,29 +26,29 @@
             </div>
           </el-form>
           <!-- 忘记密码 -->
-          <el-form :model="findForm" ref="loginForm" :rules="findRules" v-if="formIndex === 2">
+          <el-form :model="findForm" ref="forgetForm" :rules="findRules" v-show="formIndex === 2">
             <el-form-item prop="email">
               <i class="el-icon-user form-icon"></i>
-              <el-input type="text" placeholder="请输入邮箱" :value="findForm.email"></el-input>
+              <el-input type="text" placeholder="请输入邮箱" v-model="findForm.email"></el-input>
             </el-form-item>
             <el-form-item prop="password">
               <i class="el-icon-lock form-icon"></i>
-              <el-input type="text" placeholder="请输入验证码" :value="findForm.code" style="width:45%;margin-right:20px"></el-input>
+              <el-input type="text" placeholder="请输入验证码" v-model="findForm.code" style="width:45%;margin-right:20px"></el-input>
               <el-button type="text" :disabled="getCodeDisabled" @click="resend">{{getCodeText}}</el-button>
             </el-form-item>
           </el-form>
           <!-- 重新设置密码 -->
-          <el-form :model="resetForm" ref="loginForm" :rules="resetRules" v-if="formIndex === 3">
+          <el-form :model="resetForm" ref="resetForm" :rules="resetRules" v-show="formIndex === 3">
             <el-form-item prop="email">
               <i class="el-icon-lock form-icon"></i>
-              <el-input type="password" placeholder="请输入密码" :value="resetForm.password"></el-input>
+              <el-input type="password" placeholder="请输入密码" v-model="resetForm.password"></el-input>
             </el-form-item>
             <el-form-item prop="password">
               <i class="el-icon-lock form-icon"></i>
-              <el-input type="password" placeholder="请重新输入密码" :value="resetForm.rePassword"></el-input>
+              <el-input type="password" placeholder="请重新输入密码" v-model="resetForm.rePassword"></el-input>
             </el-form-item>
           </el-form>
-          <div v-if="formIndex === 4" class="find-content">找回密码成功</div>
+          <div v-show="formIndex === 4" class="find-content">找回密码成功</div>
           <div style="text-align:center;padding-top:20px">
             <el-button v-if="formIndex === 1" type="primary" style="width:80%" @click="login">登录</el-button>
             <el-button v-else type="primary" style="width:80%" @click="next">{{forgetBtn}}</el-button>
@@ -128,6 +128,7 @@ export default {
     forgetPwd () {
       this.loginTitle = '找回密码'
       this.formIndex = 2
+      this.$refs.loginForm.resetFields()
     },
 
     // 找回密码 下一步
@@ -147,6 +148,9 @@ export default {
           // 设置成功页面
           this.forgetBtn = '下一步'
           this.loginTitle = '用户登录'
+          this.$refs.loginForm.resetFields()
+          this.$refs.forgetForm.resetFields()
+          this.$refs.resetForm.resetFields()
           this.formIndex = 1
           break
       }
@@ -155,7 +159,7 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 .login {
   height: 100%;
   background:  url('../../assets/login-bg.png') no-repeat;
@@ -201,6 +205,9 @@ export default {
         padding: 40px 20px;
         .el-input {
           width: 80%;
+        }
+        .el-form-item__error {
+          margin-left: 38px;
         }
         .form-icon {
           font-size:28px;
