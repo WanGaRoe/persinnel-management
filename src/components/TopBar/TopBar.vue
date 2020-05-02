@@ -5,11 +5,6 @@
     </div>
     <div class="content">今天也要努力呀！</div>
     <div class="menu">
-      <div class="menu-box">
-        <div v-for="item in menu" :key="item.id" :class="{'active': activeId === item.id, 'menu-item': true}" >
-          <div @click="handleClickMenu(item)" style="height:100%">{{ item.name }}</div>
-        </div>
-      </div>
       <div class="exit">
         <div class="menu-item">
           <div @click="exit" style="height:100%">退出系统<img src="../../assets/exit.svg" alt="" style="vertical-align:text-top;margin-left:4px"></div>
@@ -63,7 +58,7 @@ export default {
   height: 120px;
   line-height: 120px;
   background: rgba(73, 67, 57, 1);
-  padding: 0 300px 0 100px;
+  padding: 0 100px 0 100px;
   display: flex;
   .content {
     font-size: 36px;
@@ -73,7 +68,7 @@ export default {
   .menu {
     flex: 1;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     margin-left: 60px;
     font-size: 32px;
     color: #fff;
@@ -85,9 +80,6 @@ export default {
       width: 200px;
       text-align: center;
       cursor: pointer;
-    }
-    .active {
-      background: rgba(255,255,255,.5);
     }
   }
 }

@@ -25,8 +25,23 @@ export default new Router({
           component: () => import('@/views/Management')
         },
         {
-          path: '/info',
-          name: 'info',
+          path: '/attendance',
+          name: 'attendance',
+          component: () => import('@/views/Info')
+        },
+        {
+          path: '/salary',
+          name: 'salary',
+          component: () => import('@/views/Info')
+        },
+        {
+          path: '/account',
+          name: 'account',
+          component: () => import('@/views/Account')
+        },
+        {
+          path: '/role',
+          name: 'role',
           component: () => import('@/views/Info')
         }
       ]

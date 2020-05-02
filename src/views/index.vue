@@ -36,6 +36,7 @@ export default {
     height: calc(100% - 120px);
     display: flex;
     .content-bar {
+      padding: 20px;
       flex: 1;
     }
   }
