@@ -67,6 +67,7 @@ export default {
       return path
     }
   },
+  
   methods: {
     onSelect (index, path) {
       // console.log(index, path)
