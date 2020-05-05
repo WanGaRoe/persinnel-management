@@ -28,7 +28,7 @@ axios.interceptors.request.use(config => {
 axios.interceptors.response.use(response => {
   NProgress.done()
   if (response.data.status === -1) {
-    switch (response.data.errorMsg) {
+    switch (response.data.message) {
       case '0X0001':
         Message.warning('令牌解密异常')
         break
@@ -50,8 +50,8 @@ axios.interceptors.response.use(response => {
         break
       default:
         Notification['error']({
-          Message: '失败',
-          description: response.data.errorMsg
+          title: '失败',
+          message: response.data.message
         })
     }
     return response.data
@@ -81,6 +81,7 @@ axios.interceptors.response.use(response => {
 })
 
 export function handleService (url, data, method = 'GET') {
+  method = method.toUpperCase()
   if (method === 'GET') {
     if (data) {
       Object.keys(data).forEach(key => {
@@ -93,6 +94,12 @@ export function handleService (url, data, method = 'GET') {
       url: url,
       params: data,
       method: method
+    })
+  } else if (method === 'GPOST') {
+    return axios({
+      url: url,
+      params: data,
+      method: 'post'
     })
   } else {
     return axios({

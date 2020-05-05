@@ -1,19 +1,241 @@
 <template>
   <div class="account">
     <Breadcrumb :routes="routes"></Breadcrumb>
-
+    <div class="info-table">
+      <div>
+        <el-input placeholder="请输入姓名" v-model="name" clearable></el-input>
+        <el-button style="margin-left:20px" @click="search">查询</el-button>
+        <el-button type="primary" @click="handleAdd">新增</el-button>
+      </div>
+      <!-- 表格 -->
+      <div class="table">
+        <el-table
+          :data="tableData"
+          style="width: 100%">
+          <el-table-column prop="name" label="姓名"></el-table-column>
+          <el-table-column prop="roleName" label="角色"></el-table-column>
+          <el-table-column prop="date" label="创建日期"></el-table-column>
+          <el-table-column label="操作" width="100">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+              <el-button type="text" size="small" @click="handleDelete(scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <!-- 分页 -->
+      <div class="pagination">
+        <el-pagination
+          :current-page="pageIndex"
+          @current-change="currentChange"
+          layout="prev, pager, next"
+          :total="tableData.length">
+        </el-pagination>
+      </div>
+    </div>
+    <el-dialog
+      :title="dialogTitle"
+      :visible.sync="dialogVisible"
+      width="50%"
+      :before-close="handleClose">
+      <div class="dialog-content">
+        <el-form :model="formData" ref="form" :rules="rules" label-width="80px">
+          <el-row>
+            <el-col :span="formCol">
+              <el-form-item
+                label="账号"
+                prop="loginName"
+              >
+                <el-input v-model="formData.loginName" placeholder="请输入帐号"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="formCol">
+              <el-form-item
+                label="姓名"
+                prop="name"
+              >
+                <el-input v-model="formData.name" placeholder="请输入姓名"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="formCol">
+              <el-form-item
+                label="角色"
+                prop="roleId"
+              >
+                <el-select
+                  v-model="formData.roleId"
+                  placeholder="请选择角色"
+                  style="width: 100%;"
+                >
+                  <el-option
+                    v-for="item in roleList"
+                    :key="item.value"
+                    :label="item.roleName"
+                    :value="item.roleId"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="formCol">
+              <el-form-item
+                label="性别"
+                prop="sex"
+              >
+                <el-select
+                  v-model="formData.sex"
+                  placeholder="请选择性别"
+                  style="width: 100%;"
+                >
+                  <el-option label="女" :value="0"></el-option>
+                  <el-option label="男" :value="1"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="formCol">
+              <el-form-item
+                label="手机号"
+                prop="telephone"
+              >
+                <el-input v-model="formData.telephone" placeholder="请输入手机号"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="formCol">
+              <el-form-item
+                label="密码"
+                prop="password"
+              >
+                <el-input v-model="formData.password" type="password" placeholder="请输入密码"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="formCol">
+              <el-form-item
+                label="确认密码"
+                prop="rePassword"
+              >
+                <el-input v-model="formData.rePassword" type="password" placeholder="请重新输入密码"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="onSave">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import Breadcrumb from '@/components/Breadcrumb'
+import accountService from '@/services/account.service'
+import roleService from '@/services/role.service'
 export default {
   name: 'Account',
   data () {
+    var validatePass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else {
+        if (this.ruleForm.checkPass !== this.formData.password) {
+          callback(new Error('两次密码输入不一致'))
+        }
+        callback()
+      }
+    }
     return {
+      dialogVisible: false,
+      dialogTitle: '新增帐号',
+      formCol: 12,
+      roleList: [],
+      formData: {
+        loginName: '',
+        name: '',
+        roleId: '',
+        sex: 0,
+        telephone: '',
+        password: '',
+        rePassword: ''
+      },
+      dialogType: 'add',
       routes: [
         { name: '帐号管理' }
-      ]
+      ],
+      name: '', // 搜索的姓名
+      pageIndex: 1, // 分页-当前页是第几页
+      tableData: [],
+      // 验证规则
+      rules: {
+        loginName: [
+          { required: true, message: '请输入帐号', trigger: ['change', 'blur'] }
+        ],
+        name: [
+          { required: true, message: '请输入姓名', trigger: ['change', 'blur'] }
+        ],
+        roleId: [
+          { required: true, message: '请选择角色', trigger: ['change', 'blur'] }
+        ],
+        telephone: [
+          { required: true, message: '请输入手机号', trigger: ['change', 'blur'] }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: ['change', 'blur'] }
+        ],
+        rePassword: [
+          { required: true, validator: validatePass }
+        ]
+      }
+    }
+  },
+  mounted () {
+    this.getUserList()
+  },
+  methods: {
+    // 获取角色列表
+    async getRoleList () {
+      let res = await roleService.getRoleList({
+        name: this.name
+      })
+      console.log(res)
+    },
+    // 获取用户列表
+    async getUserList () {
+      let res = await accountService.getUserList({
+        pageNum: this.pageIndex,
+        pageSize: 10,
+        userName: this.name
+      })
+      if (res.status === 0) {
+        this.tableData = res.data.records
+      }
+    },
+
+    search () {
+      console.log(this.name, this.unit)
+    },
+    // 点击新增
+    handleAdd () {
+      this.dialogVisible = true
+      this.dialogTitle = '新增账号'
+    },
+    onSave () {
+      this.$refs.form.validate(async valid => {
+        if (valid) {
+          console.log('ss')
+        }
+      })
+    },
+    handleClose () {
+      this.dialogVisible = false
+    },
+    handleEdit (row) {
+      console.log(row)
+    },
+    handleDelete (row) {
+      console.log(row)
+    },
+    currentChange (pageIndex) {
+      this.pageIndex = pageIndex
     }
   },
   components: {
@@ -23,5 +245,25 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
+.account {
+  .info-table {
+    padding: 20px 0;
+    .el-input {
+      width: 300px;
+    }
+    .table {
+      margin-top: 20px;
+      box-sizing: border-box;
+      th {
+        font-family: 'Microsoft YaHei';
+        font-weight: bold !important;
+      }
+    }
+    .pagination {
+      text-align: right;
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  }
+}
 </style>

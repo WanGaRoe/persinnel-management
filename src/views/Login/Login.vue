@@ -14,11 +14,11 @@
           <el-form :model="form" ref="loginForm" :rules="loginRules" v-show="formIndex === 1">
             <el-form-item prop="email">
               <i class="el-icon-user form-icon"></i>
-              <el-input type="text" placeholder="请输入邮箱" v-model="form.email"></el-input>
+              <el-input type="text" placeholder="请输入账号" v-model="form.email"></el-input>
             </el-form-item>
             <el-form-item prop="password">
               <i class="el-icon-lock form-icon"></i>
-              <el-input type="password" placeholder="请输入密码" v-model="form.password"></el-input>
+              <el-input type="password" placeholder="请输入密码" v-model="form.password" @keyup.enter.native="login"></el-input>
             </el-form-item>
             <div style="padding:0 40px;display:flex;justify-content:space-between">
               <el-checkbox :vlue="rememberPwd">记住密码</el-checkbox>
@@ -29,7 +29,7 @@
           <el-form :model="findForm" ref="forgetForm" :rules="findRules" v-show="formIndex === 2">
             <el-form-item prop="email">
               <i class="el-icon-user form-icon"></i>
-              <el-input type="text" placeholder="请输入邮箱" v-model="findForm.email"></el-input>
+              <el-input type="text" placeholder="请输入账号" v-model="findForm.email"></el-input>
             </el-form-item>
             <el-form-item prop="password">
               <i class="el-icon-lock form-icon"></i>
@@ -60,6 +60,7 @@
 </template>
 
 <script>
+import loginService from '@/services/login.service'
 export default {
   name: 'Login',
   data () {
@@ -86,8 +87,8 @@ export default {
       // 登录表单验证：element-ui
       loginRules: {
         email: [
-          { required: true, message: '请输入用户邮箱', trigger: 'change' },
-          { pattern: /^[A-Za-zd0-9] ([-_.][A-Za-zd] )*@([A-Za-zd] [-.]) [A-Za-zd]{2,5}$/, message: '邮箱格式不正确' }
+          { required: true, message: '请输入帐号', trigger: 'change' }
+          // { pattern: /^[A-Za-zd0-9] ([-_.][A-Za-zd] )*@([A-Za-zd] [-.]) [A-Za-zd]{2,5}$/, message: '邮箱格式不正确' }
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'change' }
@@ -101,11 +102,29 @@ export default {
       }
     }
   },
+  mounted () {
+    this.getCapcha()
+  },
   methods: {
     // 登录
     login () {
-      console.log('login')
-      this.$router.push('/home')
+      this.$refs.loginForm.validate(async valid => {
+        if (valid) {
+          let res = await loginService.login({
+            loginName: this.form.email,
+            password: this.form.password,
+            rememberMe: this.rememberPwd
+          })
+          if (res.status === 0) {
+            this.$router.push('/home')
+          }
+        }
+      })
+    },
+    // 获取验证码
+    async getCapcha () {
+      let res = await loginService.getCapcha()
+      console.log(res)
     },
 
     // 获取验证码

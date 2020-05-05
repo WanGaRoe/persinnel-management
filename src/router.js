@@ -42,7 +42,7 @@ export default new Router({
         {
           path: '/role',
           name: 'role',
-          component: () => import('@/views/Info')
+          component: () => import('@/views/Role')
         }
       ]
     },
