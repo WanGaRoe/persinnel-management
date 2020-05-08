@@ -1,20 +1,18 @@
 import axios from 'axios'
-import router from '../router'
+// import router from '../router'
 import { Message, Notification } from 'element-ui'
-import NProgress from 'nprogress'
 /**
  * 请求前拦截
  * 用于处理需要在请求前的操作
  */
 axios.interceptors.request.use(config => {
   // return config
-  NProgress.start()
   if (window.localStorage.getItem('token')) {
     if (config.url !== '/upload') {
       config.headers.Authorization = window.localStorage.getItem('token')
     }
   } else {
-    router.replace('/login')
+    // router.replace('/login')
   }
   return config
 }, function (error) {
@@ -26,7 +24,6 @@ axios.interceptors.request.use(config => {
  * 用于处理需要在请求返回后的操作
  */
 axios.interceptors.response.use(response => {
-  NProgress.done()
   if (response.data.status === -1) {
     switch (response.data.message) {
       case '0X0001':
@@ -40,7 +37,7 @@ axios.interceptors.response.use(response => {
         break
       case '0X0004':
         Message.warning('令牌已过期')
-        router.push('/login')
+        // router.push('/login')
         break
       case '0X1001':
         Message.warning('无效的签名')
@@ -61,7 +58,7 @@ axios.interceptors.response.use(response => {
   if (error.response.status === 404) {
     Message.warning('请求接口不存在')
   } else if (error.response.status === 403) {
-    router.replace('/login')
+    // router.replace('/login')
     window.localStorage.removeItem('token')
     return
   } else if (error.response.status === 500) {
