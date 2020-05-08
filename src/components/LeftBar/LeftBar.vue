@@ -13,49 +13,16 @@
 
 <script>
 import menuItem from './menu-item'
+import menuService from '@/services/menu.service'
 export default {
   name: 'LeftBar',
   data () {
     return {
-      leftNav: [
-        {
-          id: '1',
-          name: '首页',
-          url: '/home'
-        },
-        {
-          id: '2',
-          name: '人员管理',
-          url: '/management'
-        },
-        {
-          id: '3',
-          name: '考勤管理',
-          url: '/attendance'
-        },
-        {
-          id: '4',
-          name: '工资管理',
-          url: '/salary'
-        },
-        {
-          id: '5',
-          name: '系统管理',
-          children: [
-            {
-              id: '6',
-              name: '帐号管理',
-              url: '/account'
-            },
-            {
-              id: '7',
-              name: '角色管理',
-              url: '/role'
-            }
-          ]
-        }
-      ]
+      leftNav: []
     }
+  },
+  mounted () {
+    this.getMenu()
   },
   computed: {
     active () {
@@ -67,13 +34,20 @@ export default {
       return path
     }
   },
-  
+
   methods: {
+    // 点击菜单
     onSelect (index, path) {
       // console.log(index, path)
       this.$router.push({
         path: index
       })
+    },
+    async getMenu () {
+      let res = await menuService.getMenu()
+      if (res.status === 0) {
+        this.leftNav = res.data
+      }
     }
   },
   components: {

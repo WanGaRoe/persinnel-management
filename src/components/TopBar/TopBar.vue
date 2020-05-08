@@ -5,6 +5,7 @@
     </div>
     <div class="content">今天也要努力呀！</div>
     <div class="menu">
+      <div>{{name}} |</div>
       <div class="exit">
         <div class="menu-item">
           <div @click="exit" style="height:100%">退出系统<img src="../../assets/exit.svg" alt="" style="vertical-align:text-top;margin-left:4px"></div>
@@ -19,6 +20,7 @@ export default {
   name: 'TopBar',
   data () {
     return {
+      name: sessionStorage.getItem('loginName'),
       activeId: '1',
       menu: [
         {

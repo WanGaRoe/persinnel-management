@@ -4,17 +4,20 @@
     <div class="info-table">
       <div>
         <el-input placeholder="请输入姓名" v-model="name" clearable></el-input>
+        <el-select v-model="roleId" style="margin-left:20px">
+          <el-option v-for="item in roleList" :key="item.id" :value="item.id" :label="item.name"></el-option>
+        </el-select>
         <el-button style="margin-left:20px" @click="search">查询</el-button>
         <el-button type="primary" @click="handleAdd">新增</el-button>
       </div>
       <!-- 表格 -->
       <div class="table">
         <el-table
+          v-loading="tableLoading"
           :data="tableData"
           style="width: 100%">
           <el-table-column prop="name" label="姓名"></el-table-column>
           <el-table-column prop="roleName" label="角色"></el-table-column>
-          <el-table-column prop="date" label="创建日期"></el-table-column>
           <el-table-column label="操作" width="100">
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
@@ -145,9 +148,11 @@ export default {
     }
     return {
       dialogVisible: false,
+      tableLoading: false,
       dialogTitle: '新增帐号',
       formCol: 12,
       roleList: [],
+      roleId: '',
       formData: {
         loginName: '',
         name: '',
@@ -176,7 +181,8 @@ export default {
           { required: true, message: '请选择角色', trigger: ['change', 'blur'] }
         ],
         telephone: [
-          { required: true, message: '请输入手机号', trigger: ['change', 'blur'] }
+          { required: true, message: '请输入手机号', trigger: ['change', 'blur'] },
+          { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号', trigger: 'change' }
         ],
         password: [
           { required: true, message: '请输入密码', trigger: ['change', 'blur'] }
@@ -189,29 +195,33 @@ export default {
   },
   mounted () {
     this.getUserList()
+    this.getRoleList()
   },
   methods: {
     // 获取角色列表
     async getRoleList () {
-      let res = await roleService.getRoleList({
-        name: this.name
-      })
-      console.log(res)
+      let res = await roleService.getRoleList()
+      if (res.status === 0) {
+
+      }
     },
     // 获取用户列表
     async getUserList () {
+      this.tableLoading = true
       let res = await accountService.getUserList({
         pageNum: this.pageIndex,
         pageSize: 10,
         userName: this.name
       })
+      this.tableLoading = false
       if (res.status === 0) {
         this.tableData = res.data.records
       }
     },
 
     search () {
-      console.log(this.name, this.unit)
+      // console.log(this.name, this.unit)
+      this.getUserList()
     },
     // 点击新增
     handleAdd () {
@@ -221,7 +231,19 @@ export default {
     onSave () {
       this.$refs.form.validate(async valid => {
         if (valid) {
-          console.log('ss')
+          let res = await accountService.addUser({
+            loginName: this.formData.loginName,
+            name: this.formData.name,
+            password: this.formData.password,
+            roleId: this.formData.roleId,
+            sex: this.formData.sex,
+            telephone: this.formData.telephone
+          })
+          if (res.status === 0) {
+            this.$refs.form.resetFields()
+            this.dialogVisible = false
+            this.getUserList()
+          }
         }
       })
     },

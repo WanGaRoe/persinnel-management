@@ -5,6 +5,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
+Vue.prototype.$baseURL = 'http://120.26.185.241:8888'
 Vue.use(Element)
 Vue.config.productionTip = false
 

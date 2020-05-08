@@ -1,18 +1,18 @@
 <template>
   <div>
     <template v-for="(item,index) in menuList">
-      <el-menu-item :class="{'menu-item-active-background':active===item.url}" class="sn-menu-item" v-if="!item.children||item.children.length===0" :index="item.url" :key="index">
+      <el-menu-item v-show="item.own === 1" :class="{'menu-item-active-background':active===item.url}" class="sn-menu-item" v-if="!item.child||item.child.length===0" :index="item.url" :key="index">
         <span class="sn-menu-item-title" :class="{spacing:item.name.length===2}" slot="title">
           {{item.name}}
         </span>
       </el-menu-item>
-      <el-submenu class="sn-menu-item" v-else :key="index" :index="item.id">
+      <el-submenu v-show="item.own === 1" class="sn-menu-item" v-else :key="index" :index="item.id + ''">
         <template slot="title">
           <span class="sn-menu-item-title">
             {{item.name}}
           </span>
         </template>
-        <menu-item v-if="item.children" :menuList="item.children" style="text-indent:40px"></menu-item>
+        <menu-item v-if="item.child" :menuList="item.child" style="text-indent:40px"></menu-item>
       </el-submenu>
     </template>
   </div>
@@ -57,16 +57,8 @@ export default {
 </script>
 
 <style lang="less">
-
-.el-submenu__icon-arrow.el-icon-arrow-down {
-  // color: #fff;
-}
-
 .sn-menu-item-title {
   font-size: 20px
-}
-.el-submenu__title {
-  // padding-left: 24px !important;
 }
 .menu-item-active-background {
   background-color: rgba(255, 255, 255, .4) !important;

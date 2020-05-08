@@ -10,10 +10,10 @@
       <!-- 表格 -->
       <div class="table">
         <el-table
+          v-loading="tableLoading"
           :data="tableData"
           style="width: 100%">
           <el-table-column prop="name" label="角色名称"></el-table-column>
-          <el-table-column prop="role" label="用户列表"></el-table-column>
           <el-table-column label="操作" width="100">
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
@@ -74,6 +74,7 @@
 <script>
 import Breadcrumb from '@/components/Breadcrumb'
 import roleService from '@/services/role.service'
+import menuService from '@/services/menu.service'
 export default {
   name: 'Role',
   data () {
@@ -82,6 +83,7 @@ export default {
       dialogTitle: '', // 弹框标题
       dialogType: 'add',
       formCol: 22,
+      tableLoading: false,
       routes: [
         { name: '角色管理' }
       ],
@@ -91,77 +93,8 @@ export default {
       },
       name: '', // 搜索的姓名
       pageIndex: 1, // 分页-当前页是第几页
-      tableData: [
-        {
-          name: '超级管理员',
-          role: '张三',
-          date: '2018/10/11'
-        },
-        {
-          name: '管理员',
-          role: '里斯',
-          date: '2018/10/11'
-        }
-      ],
-      menuTree: [
-        {
-          'child': [
-            {
-              'child': [],
-              'id': 2,
-              'name': '员工列表',
-              'url': ''
-            }
-          ],
-          'id': 1,
-          'name': '员工管理',
-          'url': ''
-        },
-        {
-          'child': [
-            {
-              'child': [],
-              'id': 4,
-              'name': '调出统计',
-              'url': ''
-            },
-            {
-              'child': [],
-              'id': 5,
-              'name': '调入统计',
-              'url': ''
-            }
-          ],
-          'id': 3,
-          'name': '出入统计',
-          'url': ''
-        },
-        {
-          'child': [
-            {
-              'child': [],
-              'id': 7,
-              'name': '用户管理',
-              'url': ''
-            },
-            {
-              'child': [],
-              'id': 8,
-              'name': '角色管理',
-              'url': ''
-            }
-          ],
-          'id': 6,
-          'name': '系统管理',
-          'url': ''
-        },
-        {
-          'child': [],
-          'id': 9,
-          'name': '薪资管理',
-          'url': ''
-        }
-      ],
+      tableData: [],
+      menuTree: [],
       // 树参数配置
       defaultProps: {
         children: 'child',
@@ -181,14 +114,21 @@ export default {
   methods: {
     // 获取菜单
     async getMenu () {
-
+      let res = await menuService.getMenu()
+      if (res.status === 0) {
+        this.menuTree = res.data
+      }
     },
     // 获取角色列表
     async getRoleList () {
+      this.tableLoading = true
       let res = await roleService.getRoleList({
         name: this.name
       })
-      console.log(res)
+      this.tableLoading = false
+      if (res.status === 0) {
+        this.tableData = res.data
+      }
     },
     // 获取选中树的节点d
     getCheckedKeys (nodes) {
@@ -204,13 +144,22 @@ export default {
 
     // 点击新增
     handleAdd () {
+      this.getMenu()
       this.dialogTitle = '新增角色'
       this.dialogVisible = true
     },
     // 点击编辑
-    handleEdit (row) {
+    async handleEdit (row) {
       this.dialogTitle = '编辑'
       this.dialogVisible = true
+      this.formData.roleName = row.name
+      // 获取角色菜单
+      let res = await roleService.getRoleMenu({
+        roleId: row.id
+      })
+      if (res.status === 0) {
+        console.log(res)
+      }
       console.log(row)
     },
     //  保存

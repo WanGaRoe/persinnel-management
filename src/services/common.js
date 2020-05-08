@@ -1,6 +1,7 @@
 import axios from 'axios'
 // import router from '../router'
 import { Message, Notification } from 'element-ui'
+import router from '../router'
 /**
  * 请求前拦截
  * 用于处理需要在请求前的操作
@@ -26,6 +27,10 @@ axios.interceptors.request.use(config => {
 axios.interceptors.response.use(response => {
   if (response.data.status === -1) {
     switch (response.data.message) {
+      case 'unLogin':
+        Message.warning('登录过期')
+        router.push('/login')
+        break
       default:
         Notification['error']({
           title: '失败',

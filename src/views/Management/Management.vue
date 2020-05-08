@@ -13,6 +13,7 @@
       <!-- 表格 -->
       <div class="table">
         <el-table
+          v-loading="tableLoading"
           :data="tableData"
           style="width: 100%">
           <el-table-column prop="name" label="姓名"></el-table-column>
@@ -46,10 +47,12 @@
 
 <script>
 import Breadcrumb from '@/components/Breadcrumb'
+import personService from '@/services/person.service'
 export default {
   name: 'Management',
   data () {
     return {
+      tableLoading: false,
       routes: [
         { name: '人员管理' }
       ],
@@ -59,6 +62,9 @@ export default {
       tableData: [],
       pageIndex: 1
     }
+  },
+  mounted () {
+    this.getPersonList()
   },
   methods: {
     search () {
@@ -83,6 +89,20 @@ export default {
     // 页面改变
     currentChange () {
 
+    },
+
+    async getPersonList () {
+      this.tableLoading = true
+      let res = await personService.getStaffList({
+        name: this.name,
+        departId: this.unit,
+        pageNum: this.pageIndex,
+        pageSize: 10
+      })
+      this.tableLoading = false
+      if (res.status === 0) {
+        console.log(res)
+      }
     }
   },
   components: {

@@ -26,24 +26,28 @@
             </div>
           </el-form>
           <!-- 忘记密码 -->
-          <el-form :model="findForm" ref="forgetForm" :rules="findRules" v-show="formIndex === 2">
+          <el-form :model="findForm" ref="findForm" :rules="findRules" v-show="formIndex === 2">
             <el-form-item prop="userName">
               <i class="el-icon-user form-icon"></i>
               <el-input type="text" placeholder="请输入账号" v-model="findForm.userName"></el-input>
             </el-form-item>
-            <el-form-item prop="password">
+            <el-form-item prop="phone">
+              <i class="el-icon-phone form-icon"></i>
+              <el-input type="text" placeholder="请输入手机号" v-model="findForm.phone"></el-input>
+            </el-form-item>
+            <el-form-item prop="code">
               <i class="el-icon-lock form-icon"></i>
-              <el-input type="text" placeholder="请输入验证码" v-model="findForm.code" style="width:45%;margin-right:20px"></el-input>
+              <el-input type="text" placeholder="请输入手机验证码" v-model="findForm.code" style="width:45%;margin-right:20px"></el-input>
               <el-button type="text" :disabled="getCodeDisabled" @click="resend">{{getCodeText}}</el-button>
             </el-form-item>
           </el-form>
           <!-- 重新设置密码 -->
           <el-form :model="resetForm" ref="resetForm" :rules="resetRules" v-show="formIndex === 3">
-            <el-form-item prop="userName">
+            <el-form-item prop="password">
               <i class="el-icon-lock form-icon"></i>
               <el-input type="password" placeholder="请输入密码" v-model="resetForm.password"></el-input>
             </el-form-item>
-            <el-form-item prop="password">
+            <el-form-item prop="rePassword">
               <i class="el-icon-lock form-icon"></i>
               <el-input type="password" placeholder="请重新输入密码" v-model="resetForm.rePassword"></el-input>
             </el-form-item>
@@ -51,7 +55,10 @@
           <div v-show="formIndex === 4" class="find-content">找回密码成功</div>
           <div style="text-align:center;padding-top:20px">
             <el-button v-if="formIndex === 1" type="primary" style="width:80%" @click="login">登录</el-button>
-            <el-button v-else type="primary" style="width:80%" @click="next">{{forgetBtn}}</el-button>
+            <div v-else>
+              <el-button style="width:40%" @click="formIndex--">上一步</el-button>
+              <el-button type="primary" style="width:40%" @click="next">{{forgetBtn}}</el-button>
+            </div>
           </div>
         </div>
       </div>
@@ -61,16 +68,29 @@
 
 <script>
 import loginService from '@/services/login.service'
+// import axios from 'axios'
 export default {
   name: 'Login',
   data () {
+    var validatePass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else {
+        if (this.ruleForm.checkPass !== this.formData.password) {
+          callback(new Error('两次密码输入不一致'))
+        }
+        callback()
+      }
+    }
     return {
+      loginService,
       formIndex: 1, // 控制表单切换
       forgetBtn: '下一步', // 找回密码按钮显示文字
       loginTitle: '用户登录', // 登录标题
       rememberPwd: false, // 是否记住密码
       getCodeDisabled: false, // 倒计时时禁用
       getCodeText: '获取验证码', // 后去验证码
+      imgCaptcha: '',
       // 表单控件
       form: {
         userName: '',
@@ -78,6 +98,7 @@ export default {
       },
       findForm: {
         userName: '',
+        phone: '',
         code: ''
       },
       resetForm: {
@@ -95,15 +116,28 @@ export default {
         ]
       },
       findRules: {
-
+        userName: [
+          { required: true, message: '请输入帐号', trigger: 'change' }
+        ],
+        phone: [
+          { required: true, message: '请输入手机号', trigger: 'change' },
+          { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号', trigger: 'change' }
+        ],
+        code: [
+          { required: true, message: '请输入验证码', trigger: 'change' }
+        ]
       },
       resetRules: {
-
+        password: [
+          { required: true, message: '请输入密码', trigger: 'change' }
+        ],
+        rePassword: [
+          { required: true, validator: validatePass }
+        ]
       }
     }
   },
   mounted () {
-    this.getCapcha()
     if (window.localStorage.getItem('rememberMe')) {
       this.form.userName = window.localStorage.getItem('userName')
       this.form.password = window.localStorage.getItem('password')
@@ -138,12 +172,25 @@ export default {
       })
     },
     // 获取验证码
-    async getCapcha () {
-      // let res = await loginService.getCapcha()
-    },
+    // async getCapcha () {
+    //   axios.get('/api/captcha', {
+    //     params: {},
+    //     responseType: 'blob'
+    //   }).then(res => {
+    //     this.imgCaptcha = window.URL.createObjectURL(res)
+    //   })
+    // },
 
     // 获取验证码
-    resend () {
+    async resend () {
+      if (!this.findForm.phone) {
+        this.$message.error('请输入手机号')
+        return
+      }
+      if (!this.findForm.userName) {
+        this.$message.error('请输入用户名')
+        return
+      }
       this.getCodeDisabled = true
       let num = 60
       this.getCodeText = num + '秒后重新获取'
@@ -156,6 +203,13 @@ export default {
           this.getCodeDisabled = false
         }
       }, 1000)
+      let res = await loginService.phoneCode({
+        loginName: this.findForm.userName,
+        telephone: this.findForm.phone
+      })
+      if (res.status === 0) {
+        this.$message.success('发送成功')
+      }
     },
 
     // 点击找回密码
@@ -170,13 +224,38 @@ export default {
       switch (this.formIndex) {
         case 2:
           // 获取验证码校验
-          this.forgetBtn = '下一步'
-          this.formIndex++
+          this.$refs.findForm.validate(async valid => {
+            if (valid) {
+              let res = await loginService.findPassword({
+                loginNmae: this.findForm.userName,
+                telephone: this.findForm.phone,
+                telCaptcha: this.findForm.code,
+                action: 1
+              })
+              if (res.status === 0) {
+                this.forgetBtn = '下一步'
+                this.formIndex++
+              }
+            }
+          })
           break
         case 3:
-          // 设置密码
-          this.forgetBtn = '去登录'
-          this.formIndex++
+          this.$refs.resetForm.validate(async valid => {
+            if (valid) {
+              let res = await loginService.findPassword({
+                loginNmae: this.findForm.userName,
+                password: this.resetForm.password,
+                telephone: this.findForm.phone,
+                telCaptcha: this.findForm.code,
+                action: 2
+              })
+              if (res.status === 0) {
+                // 设置密码
+                this.forgetBtn = '去登录'
+                this.formIndex++
+              }
+            }
+          })
           break
         case 4:
           // 设置成功页面

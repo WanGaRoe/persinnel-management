@@ -4,6 +4,7 @@ const prefix = '/api/user'
 
 const url = {
   login: prefix + '/login',
+  phoneCode: prefix + '/telephoneCode',
   capcha: '/api/captcha'
 }
 
@@ -13,5 +14,8 @@ export default {
   },
   getCapcha (data = {}) {
     return handleService(url.capcha, data)
+  },
+  phoneCode (data) {
+    return handleService(url.phoneCode, data)
   }
 }
