@@ -26,25 +26,6 @@ axios.interceptors.request.use(config => {
 axios.interceptors.response.use(response => {
   if (response.data.status === -1) {
     switch (response.data.message) {
-      case '0X0001':
-        Message.warning('令牌解密异常')
-        break
-      case '0X0002':
-        Message.warning('令牌反序列化异常')
-        break
-      case '0X0003':
-        Message.warning('无效的请求标示')
-        break
-      case '0X0004':
-        Message.warning('令牌已过期')
-        // router.push('/login')
-        break
-      case '0X1001':
-        Message.warning('无效的签名')
-        break
-      case '0X1002':
-        Message.warning('签名篡改')
-        break
       default:
         Notification['error']({
           title: '失败',
@@ -81,6 +62,7 @@ export function handleService (url, data, method = 'GET') {
   method = method.toUpperCase()
   if (method === 'GET') {
     if (data) {
+      // 没有值的参数不传
       Object.keys(data).forEach(key => {
         if (data[key] === '') {
           data[key] = undefined

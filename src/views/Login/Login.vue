@@ -132,7 +132,6 @@ export default {
               window.localStorage.removeItem('password')
               window.localStorage.removeItem('rememberMe')
             }
-            console.log('ssss')
             this.$router.push('/home')
           }
         }
