@@ -227,7 +227,7 @@ export default {
           this.$refs.findForm.validate(async valid => {
             if (valid) {
               let res = await loginService.findPassword({
-                loginNmae: this.findForm.userName,
+                loginName: this.findForm.userName,
                 telephone: this.findForm.phone,
                 telCaptcha: this.findForm.code,
                 action: 1
@@ -243,7 +243,7 @@ export default {
           this.$refs.resetForm.validate(async valid => {
             if (valid) {
               let res = await loginService.findPassword({
-                loginNmae: this.findForm.userName,
+                loginName: this.findForm.userName,
                 password: this.resetForm.password,
                 telephone: this.findForm.phone,
                 telCaptcha: this.findForm.code,

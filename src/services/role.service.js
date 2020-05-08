@@ -5,7 +5,8 @@ const prefix = '/api/user/manage'
 const url = {
   getRoleList: prefix + '/roleList',
   addRole: prefix + '/addRole',
-  getRoleMenu: '/user/auth/roleMenu'
+  getRoleMenu: '/api/user/auth/roleMenu',
+  updateRole: prefix + '/roleAuthMenu'
 }
 
 export default {
@@ -19,5 +20,8 @@ export default {
   },
   getRoleMenu (data) {
     return handleService(url.getRoleMenu, data)
+  },
+  updateRole (data) {
+    return handleService(url.updateRole, data, 'post')
   }
 }

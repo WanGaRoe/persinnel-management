@@ -58,6 +58,7 @@
               :data="menuTree"
               show-checkbox
               node-key="id"
+              :default-checked-keys="defaultCheckedKeys"
               :props="defaultProps">
             </el-tree>
           </div>
@@ -79,11 +80,13 @@ export default {
   name: 'Role',
   data () {
     return {
+      id: '',
       dialogVisible: false, // 控制弹框显示隐藏
       dialogTitle: '', // 弹框标题
       dialogType: 'add',
       formCol: 22,
       tableLoading: false,
+      defaultCheckedKeys: [], // 默认勾选菜单
       routes: [
         { name: '角色管理' }
       ],
@@ -147,21 +150,42 @@ export default {
       this.getMenu()
       this.dialogTitle = '新增角色'
       this.dialogVisible = true
+      this.defaultCheckedKeys = []
+      this.id = ''
     },
     // 点击编辑
     async handleEdit (row) {
       this.dialogTitle = '编辑'
       this.dialogVisible = true
       this.formData.roleName = row.name
+      this.id = row.id
       // 获取角色菜单
       let res = await roleService.getRoleMenu({
         roleId: row.id
       })
       if (res.status === 0) {
-        console.log(res)
+        this.menuTree = res.data
+        this.defaultCheckedKeys = this.getDefaultCheckedKeys(res.data)
       }
-      console.log(row)
     },
+
+    // 递归得到勾选的权限
+    getDefaultCheckedKeys (treeNode) {
+      let checkedKeys = []
+      if (treeNode instanceof Array && treeNode.length > 0) {
+        treeNode.forEach(item => {
+          if (item.own === 1) {
+            if (item.child.length === 0) {
+              checkedKeys.push(item.id)
+            } else {
+              checkedKeys = [...checkedKeys, ...this.getDefaultCheckedKeys(item.child)]
+            }
+          }
+        })
+      }
+      return checkedKeys
+    },
+
     //  保存
     onSave () {
       this.$refs.form.validate(async valid => {
@@ -169,13 +193,23 @@ export default {
           let halfCheckedKeys = this.$refs.menuTree.getCheckedKeys()
           let checkedKeys = [...this.$refs.menuTree.getHalfCheckedKeys(), ...halfCheckedKeys]
           console.log(checkedKeys)
-          let res = await roleService.addRole({
-            roleName: this.formData.roleName,
-            menuIds: checkedKeys
-          })
+          let res
+          if (!this.id) {
+            res = await roleService.addRole({
+              roleName: this.formData.roleName,
+              menuIds: checkedKeys
+            })
+          } else {
+            res = await roleService.updateRole({
+              roleId: this.id,
+              roleName: this.formData.roleName,
+              menuIds: checkedKeys
+            })
+          }
           if (res.status === 0) {
             this.dialogVisible = false
             this.getRoleList()
+            this.$message.success(this.id ? '修改成功' : '新增成功')
           }
         }
       })
