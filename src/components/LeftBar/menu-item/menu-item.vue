@@ -26,21 +26,12 @@ export default {
     path () {
       return this.$route.path
     },
+
+    // 菜单激活时的url
     active () {
       let path = this.$route.path
       // if (path === '/track') {
       //   return '/person'
-      // } else if (path === '/video/record') {
-      //   return '/video'
-      // } else if (path === '/system/permission') {
-      //   return '/system/role'
-      // } else if (path === '/importPerson') {
-      //   return '/tempGroup'
-      // } else if (path === '/person-hire' || path === '/person-staff/modify' || path === '/person-hire/modify') {
-      //   return '/person-staff'
-      // } else if (path === '/schoolfellow/graduate' || path === '/schoolfellow/staff' || path === '/schoolfellow/staff/detail' || path === '/schoolfellow/employer' ||
-      //   path === '/schoolfellow/employer/detail') {
-      //   return '/schoolfellow/undergraduate'
       // }
       return path
     }

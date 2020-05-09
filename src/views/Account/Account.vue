@@ -4,7 +4,7 @@
     <div class="info-table">
       <div>
         <el-input placeholder="请输入姓名" v-model="name" clearable></el-input>
-        <el-select v-model="roleId" style="margin-left:20px">
+        <el-select v-model="roleId" style="margin-left:20px" placeholder="请选择角色" clearable >
           <el-option v-for="item in roleList" :key="item.id" :value="item.id" :label="item.name"></el-option>
         </el-select>
         <el-button style="margin-left:20px" @click="search">查询</el-button>
@@ -73,8 +73,8 @@
                   <el-option
                     v-for="item in roleList"
                     :key="item.value"
-                    :label="item.roleName"
-                    :value="item.roleId"
+                    :label="item.name"
+                    :value="item.id"
                   ></el-option>
                 </el-select>
               </el-form-item>
@@ -126,11 +126,13 @@
         <el-button type="primary" @click="onSave">确 定</el-button>
       </span>
     </el-dialog>
+    <DeleteDialog title="提示" :deleteVisible="deleteVisible" @deleteOk="deleteOk" @cancel="deleteVisible=false"/>
   </div>
 </template>
 
 <script>
 import Breadcrumb from '@/components/Breadcrumb'
+import DeleteDialog from '@/components/DeleteDialog'
 import accountService from '@/services/account.service'
 import roleService from '@/services/role.service'
 export default {
@@ -140,14 +142,16 @@ export default {
       if (value === '') {
         callback(new Error('请输入密码'))
       } else {
-        if (this.ruleForm.checkPass !== this.formData.password) {
+        if (this.formData.rePassword !== this.formData.password) {
           callback(new Error('两次密码输入不一致'))
         }
         callback()
       }
     }
     return {
+      id: '',
       dialogVisible: false,
+      deleteVisible: false,
       tableLoading: false,
       dialogTitle: '新增帐号',
       formCol: 12,
@@ -202,7 +206,7 @@ export default {
     async getRoleList () {
       let res = await roleService.getRoleList()
       if (res.status === 0) {
-
+        this.roleList = res.data
       }
     },
     // 获取用户列表
@@ -211,7 +215,8 @@ export default {
       let res = await accountService.getUserList({
         pageNum: this.pageIndex,
         pageSize: 10,
-        userName: this.name
+        userName: this.name,
+        roleId: this.roleId
       })
       this.tableLoading = false
       if (res.status === 0) {
@@ -225,20 +230,34 @@ export default {
     },
     // 点击新增
     handleAdd () {
+      this.id = ''
       this.dialogVisible = true
       this.dialogTitle = '新增账号'
     },
     onSave () {
       this.$refs.form.validate(async valid => {
         if (valid) {
-          let res = await accountService.addUser({
-            loginName: this.formData.loginName,
-            name: this.formData.name,
-            password: this.formData.password,
-            roleId: this.formData.roleId,
-            sex: this.formData.sex,
-            telephone: this.formData.telephone
-          })
+          let res
+          if (!this.id) {
+            res = await accountService.addUser({
+              loginName: this.formData.loginName,
+              name: this.formData.name,
+              password: this.formData.password,
+              roleId: this.formData.roleId,
+              sex: this.formData.sex,
+              telephone: this.formData.telephone
+            })
+          } else {
+            res = await accountService.updateUser({
+              id: this.id,
+              loginName: this.formData.loginName,
+              name: this.formData.name,
+              password: this.formData.password,
+              roleId: this.formData.roleId,
+              sex: this.formData.sex,
+              telephone: this.formData.telephone
+            })
+          }
           if (res.status === 0) {
             this.$refs.form.resetFields()
             this.dialogVisible = false
@@ -251,17 +270,31 @@ export default {
       this.dialogVisible = false
     },
     handleEdit (row) {
-      console.log(row)
+      this.dialogTitle = '编辑帐号'
+      this.id = row.id
+      this.dialogVisible = true
     },
     handleDelete (row) {
-      console.log(row)
+      this.id = row.id
+      this.deleteVisible = true
+    },
+    async deleteOk () {
+      let res = await accountService.deleteUser({
+        id: this.id
+      })
+      if (res.status === 0) {
+        this.$message.success('删除成功')
+        this.deleteVisible = false
+        this.getUserList()
+      }
     },
     currentChange (pageIndex) {
       this.pageIndex = pageIndex
     }
   },
   components: {
-    Breadcrumb
+    Breadcrumb,
+    DeleteDialog
   }
 }
 </script>

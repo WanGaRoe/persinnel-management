@@ -69,11 +69,13 @@
         <el-button type="primary" @click="onSave">确 定</el-button>
       </span>
     </el-dialog>
+    <DeleteDialog title="提示" :deleteVisible="deleteVisible" @deleteOk="deleteOk" @cancel="deleteVisible=false"/>
   </div>
 </template>
 
 <script>
 import Breadcrumb from '@/components/Breadcrumb'
+import DeleteDialog from '@/components/DeleteDialog'
 import roleService from '@/services/role.service'
 import menuService from '@/services/menu.service'
 export default {
@@ -81,6 +83,7 @@ export default {
   data () {
     return {
       id: '',
+      deleteVisible: false,
       dialogVisible: false, // 控制弹框显示隐藏
       dialogTitle: '', // 弹框标题
       dialogType: 'add',
@@ -155,7 +158,7 @@ export default {
     },
     // 点击编辑
     async handleEdit (row) {
-      this.dialogTitle = '编辑'
+      this.dialogTitle = '编辑角色'
       this.dialogVisible = true
       this.formData.roleName = row.name
       this.id = row.id
@@ -217,14 +220,26 @@ export default {
 
     // 点击删除
     handleDelete (row) {
-      console.log(row)
+      this.deleteVisible = true
+      this.id = row.id
+    },
+    async deleteOk () {
+      let res = await roleService.deleteRole({
+        id: this.id
+      })
+      if (res.status === 0) {
+        this.$message.success('删除成功')
+        this.deleteVisible = false
+        this.getRoleList()
+      }
     },
     currentChange (pageIndex) {
       this.pageIndex = pageIndex
     }
   },
   components: {
-    Breadcrumb
+    Breadcrumb,
+    DeleteDialog
   }
 }
 </script>
