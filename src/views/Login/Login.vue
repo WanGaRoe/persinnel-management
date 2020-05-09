@@ -76,7 +76,7 @@ export default {
       if (value === '') {
         callback(new Error('请输入密码'))
       } else {
-        if (this.ruleForm.checkPass !== this.formData.password) {
+        if (this.resetForm.password !== this.resetForm.rePassword) {
           callback(new Error('两次密码输入不一致'))
         }
         callback()
@@ -262,7 +262,7 @@ export default {
           this.forgetBtn = '下一步'
           this.loginTitle = '用户登录'
           this.$refs.loginForm.resetFields()
-          this.$refs.forgetForm.resetFields()
+          this.$refs.findForm.resetFields()
           this.$refs.resetForm.resetFields()
           this.formIndex = 1
           break
