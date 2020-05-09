@@ -4,7 +4,6 @@
     <div class="show">
       <div class="show-item">
         <div class="search">
-          月职工调入调出情况:
           <el-date-picker
             v-model="monthCount"
             type="month"
@@ -21,7 +20,6 @@
       </div>
       <div class="show-item">
         <div class="search">
-          年职工调入调出情况:
           <el-date-picker
             v-model="yearCount"
             type="year"
@@ -49,8 +47,8 @@ export default {
   name: 'Home',
   data () {
     return {
-      monthCount: (new Date()).getFullYear().toString(),
-      yearCount: (new Date()).getFullYear() + '-' + ((new Date()).getMonth() + 1),
+      monthCount: (new Date()).getFullYear() + '-' + ((new Date()).getMonth() + 1),
+      yearCount: (new Date()).getFullYear().toString(),
       monthInOut: '调入',
       yearInOut: '调入',
       monthChart: '',
@@ -67,6 +65,7 @@ export default {
     // 获取统计数据
     getMonthStatistic () {
       var option = {
+        // color: ['#2C8CEC'],
         title: {
           text: '月职工调入调出情况'
         },

@@ -16,6 +16,7 @@
           v-loading="tableLoading"
           :data="tableData"
           style="width: 100%">
+          <el-table-column prop="loginName" label="帐号"></el-table-column>
           <el-table-column prop="name" label="姓名"></el-table-column>
           <el-table-column prop="roleName" label="角色"></el-table-column>
           <el-table-column label="操作" width="100">
@@ -276,7 +277,7 @@ export default {
       this.formData.loginName = row.loginName
       this.formData.name = row.name
       this.formData.roleId = +row.roleId
-      this.formData.sex = row.sex
+      this.formData.sex = +row.sex
       this.formData.telephone = row.telephone
     },
     handleDelete (row) {

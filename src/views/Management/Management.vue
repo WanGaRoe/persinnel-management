@@ -17,13 +17,17 @@
           :data="tableData"
           style="width: 100%">
           <el-table-column prop="name" label="姓名"></el-table-column>
-          <el-table-column prop="role" label="性别"></el-table-column>
-          <el-table-column prop="role" label="民族"></el-table-column>
-          <el-table-column prop="role" label="单位"></el-table-column>
+          <el-table-column prop="sex" label="性别">
+            <template slot-scope="scope">
+              {{scope.row.sex ? '男' : '女'}}
+            </template>
+          </el-table-column>
+          <el-table-column prop="nation" label="民族"></el-table-column>
+          <el-table-column prop="departName" label="单位"></el-table-column>
           <el-table-column prop="role" label="工种"></el-table-column>
-          <el-table-column prop="role" label="入职日期"></el-table-column>
-          <el-table-column prop="role" label="工资"></el-table-column>
-          <el-table-column label="操作" width="100">
+          <el-table-column prop="birth" label="入职日期"></el-table-column>
+          <el-table-column prop="slavery" label="工资"></el-table-column>
+          <el-table-column label="操作" width="200">
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
               <el-button type="text" size="small" @click="handleInTransfer(scope.row)">内部调动</el-button>
@@ -101,6 +105,7 @@ export default {
       })
       this.tableLoading = false
       if (res.status === 0) {
+        this.tableData = res.data.records
         console.log(res)
       }
     }
