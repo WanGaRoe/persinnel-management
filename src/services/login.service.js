@@ -6,7 +6,8 @@ const url = {
   login: prefix + '/login',
   phoneCode: prefix + '/telephoneCode',
   capcha: '/api/captcha',
-  findPassword: prefix + '/forget'
+  findPassword: prefix + '/forget',
+  logout: prefix + '/logout'
 }
 
 export default {
@@ -25,5 +26,9 @@ export default {
   // 找回密码
   findPassword (data) {
     return handleService(url.findPassword, data, 'post')
+  },
+  // 退出登录
+  logout (data = {}) {
+    return handleService(url.logout, data)
   }
 }

@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import loginService from '@/services/login.service'
 export default {
   name: 'TopBar',
   data () {
@@ -48,8 +49,11 @@ export default {
       this.activeId = menu.id
       this.$router.push(menu.url)
     },
-    exit () {
-      this.$router.push('/login')
+    async exit () {
+      let res = await loginService.logout()
+      if (res.status === 0) {
+        this.$router.push('/login')
+      }
     }
   }
 }

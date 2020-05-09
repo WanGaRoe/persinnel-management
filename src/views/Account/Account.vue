@@ -273,6 +273,11 @@ export default {
       this.dialogTitle = '编辑帐号'
       this.id = row.id
       this.dialogVisible = true
+      this.formData.loginName = row.loginName
+      this.formData.name = row.name
+      this.formData.roleId = +row.roleId
+      this.formData.sex = row.sex
+      this.formData.telephone = row.telephone
     },
     handleDelete (row) {
       this.id = row.id
