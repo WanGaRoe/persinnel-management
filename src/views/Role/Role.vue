@@ -38,7 +38,7 @@
       :title="dialogTitle"
       :visible.sync="dialogVisible"
       width="30%"
-      :before-close="handleClose">
+      @close="handleClose">
        <div class="dialog-content">
         <el-form :model="formData" ref="form" :rules="rules" label-width="80px">
           <el-row>
@@ -47,7 +47,7 @@
                 label="角色名"
                 prop="roleName"
               >
-                <el-input v-model="formData.roleName" placeholder="请输入帐号"></el-input>
+                <el-input v-model="formData.roleName" placeholder="请输入角色名"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -141,6 +141,7 @@ export default {
       console.log(nodes)
     },
     handleClose () {
+      this.$refs.form.resetFields()
       this.dialogVisible = false
     },
     // 搜索
@@ -235,6 +236,7 @@ export default {
     },
     currentChange (pageIndex) {
       this.pageIndex = pageIndex
+      this.getRoleList()
     }
   },
   components: {

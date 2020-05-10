@@ -1,7 +1,7 @@
 <template>
   <div class="delete-dialog">
     <el-dialog :title="title" :visible.sync="deleteVisible" width="30%" @close="dialogClose">
-      <span>删除后不可恢复，是否删除</span>
+      <span>{{ content }}</span>
       <span slot="footer" class="dialog-footer">
       <el-button @click="$emit('cancel')">取 消</el-button>
       <el-button type="primary" @click="deleteOk">确 定</el-button>
@@ -18,6 +18,9 @@ export default {
     },
     deleteVisible: {
       default: false
+    },
+    content: {
+      default: '删除后不可恢复，是否删除'
     }
   },
   name: 'DeleteDialog',

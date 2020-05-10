@@ -37,11 +37,12 @@
         </el-pagination>
       </div>
     </div>
+    <!-- 表单 -->
     <el-dialog
       :title="dialogTitle"
       :visible.sync="dialogVisible"
       width="50%"
-      :before-close="handleClose">
+      @close="handleClose">
       <div class="dialog-content">
         <el-form :model="formData" ref="form" :rules="rules" label-width="80px">
           <el-row>
@@ -182,6 +183,9 @@ export default {
         name: [
           { required: true, message: '请输入姓名', trigger: ['change', 'blur'] }
         ],
+        sex: [
+          { required: true, message: '请选择性别', trigger: ['change', 'blur'] }
+        ],
         roleId: [
           { required: true, message: '请选择角色', trigger: ['change', 'blur'] }
         ],
@@ -268,6 +272,7 @@ export default {
       })
     },
     handleClose () {
+      this.$refs.form.resetFields()
       this.dialogVisible = false
     },
     handleEdit (row) {
@@ -296,6 +301,7 @@ export default {
     },
     currentChange (pageIndex) {
       this.pageIndex = pageIndex
+      this.getUserList()
     }
   },
   components: {
