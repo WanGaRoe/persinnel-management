@@ -13,6 +13,7 @@
 
 <script>
 import menuItem from './menu-item'
+import { mapMutations } from 'vuex'
 import menuService from '@/services/menu.service'
 export default {
   name: 'LeftBar',
@@ -36,6 +37,7 @@ export default {
   },
 
   methods: {
+    ...mapMutations(['SET_SHOW_PAGE']),
     // 点击菜单
     onSelect (index, path) {
       // console.log(index, path)
@@ -43,10 +45,36 @@ export default {
         path: index
       })
     },
+    getFirstPage (tree) {
+      let path
+      if (tree instanceof Array) {
+        for (let i = 0; i < tree.length; i++) {
+          const el = tree[i]
+          if (el.own === 1) {
+            if (el.child.length > 0) {
+              path = this.getFirstPage(el.child)
+            } else {
+              path = el.url
+            }
+            if (path) {
+              break
+            }
+          }
+        }
+      }
+      return path
+    },
     async getMenu () {
       let res = await menuService.getMenu()
       if (res.status === 0) {
         this.leftNav = res.data
+        let path = this.getFirstPage(res.data)
+        if (this.$route.path === '/home') {
+          if (path !== '/home') {
+            this.$router.replace(path)
+          }
+        }
+        this.SET_SHOW_PAGE(true)
       }
     }
   },

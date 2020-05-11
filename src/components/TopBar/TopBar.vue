@@ -17,6 +17,7 @@
 
 <script>
 import loginService from '@/services/login.service'
+import { mapMutations } from 'vuex'
 export default {
   name: 'TopBar',
   data () {
@@ -44,6 +45,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['SET_SHOW_PAGE']),
     // 点击上方菜单
     handleClickMenu (menu) {
       this.activeId = menu.id
@@ -52,6 +54,7 @@ export default {
     async exit () {
       let res = await loginService.logout()
       if (res.status === 0) {
+        this.SET_SHOW_PAGE(false)
         this.$router.push('/login')
       }
     }

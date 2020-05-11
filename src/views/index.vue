@@ -5,7 +5,7 @@
       <div class="left-bar">
         <LeftBar/>
       </div>
-      <div class="content-bar">
+      <div class="content-bar" v-if="showPage">
         <router-view></router-view>
       </div>
     </div>
@@ -15,12 +15,15 @@
 <script>
 import TopBar from '@/components/TopBar'
 import LeftBar from '@/components/LeftBar'
+import { mapGetters } from 'vuex'
 export default {
   name: 'index',
   data () {
     return {
-
     }
+  },
+  computed: {
+    ...mapGetters(['showPage'])
   },
   components: {
     TopBar,
