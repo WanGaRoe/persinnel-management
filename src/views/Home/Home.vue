@@ -8,7 +8,11 @@
             v-model="monthCount"
             type="month"
             :clearable="false"
-            placeholder="选择月">
+            placeholder="选择月"
+            @change="monthChange"
+            format="yyyy-MM"
+            value-format="yyyy-MM"
+            >
           </el-date-picker>
           <el-select v-model="monthInOut" style="margin-left: 20px" clearable>
             <el-option value="调入">调入</el-option>
@@ -24,7 +28,11 @@
             v-model="yearCount"
             type="year"
             :clearable="false"
-            placeholder="选择年">
+            placeholder="选择年"
+            @change="yearChange"
+            format="yyyy"
+            value-format="yyyy"
+            >
           </el-date-picker>
           <el-select v-model="yearInOut" style="margin-left: 20px" clearable>
             <el-option value="调入">调入</el-option>
@@ -42,6 +50,7 @@
 
 <script>
 import echarts from 'echarts'
+import personService from '@/services/person.service'
 // import MainTop from '@/components/MainTop'
 export default {
   name: 'Home',
@@ -49,6 +58,8 @@ export default {
     return {
       monthCount: (new Date()).getFullYear() + '-' + ((new Date()).getMonth() + 1),
       yearCount: (new Date()).getFullYear().toString(),
+      // monthCount: '',
+      // yearCount: '',
       monthInOut: '调入',
       yearInOut: '调入',
       monthChart: '',
@@ -58,6 +69,7 @@ export default {
   mounted () {
     this.monthChart = echarts.init(document.getElementById('monthStatistics'))
     this.yearChart = echarts.init(document.getElementById('yearStatistics'))
+    this.getMonthStatistics()
     this.getMonthStatistic()
     this.getYearStatistic()
   },
@@ -105,6 +117,36 @@ export default {
         }]
       }
       this.yearChart.setOption(option)
+    },
+    // 获取月统计
+    async getMonthStatistics () {
+      let res = await personService.getStaffStatistics({
+        type: 1,
+        start: '2020-01-01 00:00:00',
+        end: '2020-05-11 23:59:59'
+      })
+      if (res.status === 0) {
+
+      }
+    },
+    // 获取年统计
+    async getYearStatistics () {
+      let res = await personService.getStaffStatistics({
+        type: 1,
+        start: '2020-01-01 00:00:00',
+        end: '2020-05-11 23:59:59'
+      })
+      if (res.status === 0) {
+
+      }
+    },
+    // 月份改变
+    monthChange (month) {
+      console.log(month, this.monthCount)
+    },
+    // 年份改变
+    yearChange (year) {
+      console.log(year)
     }
   },
   components: {

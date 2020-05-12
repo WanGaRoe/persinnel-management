@@ -185,7 +185,7 @@ export default {
       formCol: 12,
       formData: {
         name: '',
-        sex: '0',
+        sex: 0,
         departId: '',
         birth: '',
         nation: '',
