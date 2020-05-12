@@ -19,9 +19,10 @@
           <el-table-column prop="loginName" label="帐号"></el-table-column>
           <el-table-column prop="name" label="姓名"></el-table-column>
           <el-table-column prop="roleName" label="角色"></el-table-column>
-          <el-table-column label="操作" width="100">
+          <el-table-column label="操作" width="200">
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+              <el-button type="text" size="small" @click="handleResetPassword(scope.row)">重置密码</el-button>
               <el-button type="text" size="small" @click="handleDelete(scope.row)">删除</el-button>
             </template>
           </el-table-column>
@@ -128,7 +129,7 @@
         <el-button type="primary" @click="onSave">确 定</el-button>
       </span>
     </el-dialog>
-    <DeleteDialog title="提示" :deleteVisible="deleteVisible" @deleteOk="deleteOk" @cancel="deleteVisible=false"/>
+    <DeleteDialog title="提示" :content="dialogContent" :deleteVisible="deleteVisible" @deleteOk="deleteOk" @cancel="deleteVisible=false"/>
   </div>
 </template>
 
@@ -156,6 +157,8 @@ export default {
       deleteVisible: false,
       tableLoading: false,
       dialogTitle: '新增帐号',
+      dialogContent: '',
+      dialogType: 'delete',
       formCol: 12,
       roleList: [],
       roleId: '',
@@ -168,7 +171,6 @@ export default {
         password: '',
         rePassword: ''
       },
-      dialogType: 'add',
       routes: [
         { name: '帐号管理' }
       ],
@@ -267,6 +269,7 @@ export default {
             this.$refs.form.resetFields()
             this.dialogVisible = false
             this.getUserList()
+            this.$message.success(this.id ? '修改成功' : '新增成功')
           }
         }
       })
@@ -285,18 +288,36 @@ export default {
       this.formData.sex = +row.sex
       this.formData.telephone = row.telephone
     },
+    handleResetPassword (row) {
+      this.id = row.id
+      this.dialogType = 'reset'
+      this.dialogContent = '是否重置密码'
+      this.dialogVisible = true
+    },
     handleDelete (row) {
       this.id = row.id
+      this.dialogType = 'delete'
+      this.dialogContent = '删除后不可恢复，是否删除'
       this.deleteVisible = true
     },
     async deleteOk () {
-      let res = await accountService.deleteUser({
-        id: this.id
-      })
-      if (res.status === 0) {
-        this.$message.success('删除成功')
-        this.deleteVisible = false
-        this.getUserList()
+      if (this.dialogType === 'reset') {
+        let res = await accountService.resetPassword({
+          id: this.id
+        })
+        if (res.status === 0) {
+          this.$message.success('重置成功')
+          this.deleteVisible = false
+        }
+      } else {
+        let res = await accountService.deleteUser({
+          id: this.id
+        })
+        if (res.status === 0) {
+          this.$message.success('删除成功')
+          this.deleteVisible = false
+          this.getUserList()
+        }
       }
     },
     currentChange (pageIndex) {

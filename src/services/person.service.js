@@ -9,7 +9,8 @@ const url = {
   staffIn: prefix + '/staffIn',
   staffInnerTransfer: prefix + '/staffInnerTransfer',
   staffOut: prefix + '/staffOut',
-  getStaffStatistics: prefix + '/staffStatistics'
+  getStaffStatistics: prefix + '/staffStatistics',
+  getTransferLog: prefix + '/transferLog'
 }
 
 export default {
@@ -40,5 +41,9 @@ export default {
   // 获取统计详情
   getStaffStatistics (data) {
     return handleService(url.getStaffStatistics, data)
+  },
+  // 获取员工调动记录
+  getTransferLog (data) {
+    return handleService(url.getTransferLog, data)
   }
 }

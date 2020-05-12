@@ -30,7 +30,7 @@
           <el-table-column label="操作" width="200">
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-              <!-- <el-button type="text" size="small" @click="handleInTransfer(scope.row)">内部调动</el-button> -->
+              <el-button type="text" size="small" @click="handleTransferLog(scope.row)">调动记录</el-button>
               <el-button type="text" size="small" @click="handleDelete(scope.row)">调出</el-button>
             </template>
           </el-table-column>
@@ -49,10 +49,10 @@
     <el-dialog
       :title="dialogTitle"
       :visible.sync="dialogVisible"
-      width="50%"
+      :width="dialogWidth"
       @close="handleClose">
       <div class="dialog-content">
-        <el-form :model="formData" ref="form" :rules="rules" label-width="90px">
+        <el-form v-if="dialogType === 'add'" :model="formData" ref="form" :rules="rules" label-width="90px">
           <el-row>
             <el-col :span="formCol">
               <el-form-item
@@ -159,10 +159,21 @@
             </el-col>
           </el-row>
         </el-form>
+        <el-table
+          v-if="dialogType === 'log'"
+          v-loading="dialogTableLoading"
+          :data="dialogTableData"
+          style="width: 100%">
+          <el-table-column prop="beforeDepartName" label="原单位"></el-table-column>
+          <el-table-column prop="afterDepartName" label="现单位"></el-table-column>
+          <el-table-column prop="beforeSalve" label="原薪资"></el-table-column>
+          <el-table-column prop="afterSalve" label="现薪资"></el-table-column>
+          <el-table-column prop="time" label="调动时间"></el-table-column>
+        </el-table>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onSave">确 定</el-button>
+        <el-button v-if="dialogType !== 'log'" type="primary" @click="onSave">确 定</el-button>
       </span>
     </el-dialog>
     <DeleteDialog title="提示" content="是否调出" :deleteVisible="deleteVisible" @deleteOk="deleteOk" @cancel="deleteVisible=false"/>
@@ -181,7 +192,11 @@ export default {
       dialogVisible: false,
       deleteVisible: false,
       tableLoading: false,
+      dialogType: 'add',
       dialogTitle: '新增帐号',
+      dialogWidth: '50%',
+      dialogTableLoading: false,
+      dialogTableData: [],
       formCol: 12,
       formData: {
         name: '',
@@ -243,6 +258,8 @@ export default {
     // 编辑
     handleEdit (row) {
       this.dialogTitle = '编辑人员'
+      this.dialogWidth = '50%'
+      this.dialogType = 'add'
       this.id = row.id
       this.dialogVisible = true
       this.formData.name = row.name
@@ -255,6 +272,8 @@ export default {
     // 调入
     handleAdd () {
       this.id = ''
+      this.dialogWidth = '50%'
+      this.dialogType = 'add'
       this.dialogVisible = true
     },
     onSave () {
@@ -308,9 +327,24 @@ export default {
         this.getPersonList()
       }
     },
-    // 内部调动
-    handleInTransfer () {
-
+    // 调动日志
+    handleTransferLog (row) {
+      this.id = row.id
+      this.dialogType = 'log'
+      this.dialogWidth = '60%'
+      this.dialogVisible = true
+      this.getTransferLog()
+    },
+    // 获取调动日志
+    async getTransferLog () {
+      this.dialogTableLoading = true
+      let res = await personService.getTransferLog({
+        id: this.id
+      })
+      this.dialogTableLoading = false
+      if (res.status === 0) {
+        this.dialogTableData = res.data
+      }
     },
     // 页面改变
     currentChange (index) {

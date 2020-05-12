@@ -173,6 +173,7 @@ export default {
           if (res.status === 0) {
             // console.log(res)
             window.sessionStorage.setItem('loginName', res.data.loginName)
+            window.sessionStorage.setItem('id', res.data.id)
             if (this.rememberPwd) {
               window.localStorage.setItem('userName', this.form.userName)
               window.localStorage.setItem('password', this.form.password)
@@ -234,7 +235,7 @@ export default {
     forgetPwd () {
       this.loginTitle = '找回密码'
       this.formIndex = 2
-      this.$refs.loginForm.resetFields()
+      // this.$refs.loginForm.resetFields()
     },
 
     // 找回密码 下一步
@@ -279,7 +280,7 @@ export default {
           // 设置成功页面
           this.forgetBtn = '下一步'
           this.loginTitle = '用户登录'
-          this.$refs.loginForm.resetFields()
+          // this.$refs.loginForm.resetFields()
           this.$refs.findForm.resetFields()
           this.$refs.resetForm.resetFields()
           this.formIndex = 1

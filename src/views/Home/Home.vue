@@ -11,7 +11,7 @@
             placeholder="选择月"
             @change="monthChange"
             format="yyyy-MM"
-            value-format="yyyy-MM"
+            value-format="yyyy-MM-dd HH:mm:ss"
             >
           </el-date-picker>
           <el-select v-model="monthInOut" style="margin-left: 20px" clearable>
@@ -31,7 +31,7 @@
             placeholder="选择年"
             @change="yearChange"
             format="yyyy"
-            value-format="yyyy"
+            value-format="yyyy-MM-dd HH:mm:ss"
             >
           </el-date-picker>
           <el-select v-model="yearInOut" style="margin-left: 20px" clearable>
@@ -122,8 +122,10 @@ export default {
     async getMonthStatistics () {
       let res = await personService.getStaffStatistics({
         type: 1,
-        start: '2020-01-01 00:00:00',
-        end: '2020-05-11 23:59:59'
+        // start: this.monthCount,
+        // end: this.monthCount
+        start: '2020-05-12 00:00:00',
+        end: '2020-05-12 23:59:59'
       })
       if (res.status === 0) {
 
@@ -143,6 +145,7 @@ export default {
     // 月份改变
     monthChange (month) {
       console.log(month, this.monthCount)
+      this.getMonthStatistics()
     },
     // 年份改变
     yearChange (year) {

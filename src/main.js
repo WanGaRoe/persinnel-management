@@ -13,6 +13,7 @@ Vue.config.productionTip = false
 router.beforeEach((to, from, next) => {
   if (to.path === '/login') {
     window.sessionStorage.removeItem('loginName')
+    window.sessionStorage.removeItem('id')
   }
   let user = window.sessionStorage.getItem('loginName')
   if (!user && to.path !== '/login') {

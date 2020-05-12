@@ -6,7 +6,8 @@ const url = {
   addUser: prefix + '/manage/addUser',
   getUserList: prefix + '/auth/page',
   updateUser: prefix + '/auth/editInformation',
-  deleteUser: prefix + '/auth/deleteUser'
+  deleteUser: prefix + '/auth/deleteUser',
+  changePassword: prefix + '/auth/changePassword'
 }
 
 export default {
@@ -25,5 +26,9 @@ export default {
   // 删除帐号
   deleteUser (data) {
     return handleService(url.deleteUser, data)
+  },
+  // 修改密码
+  changePassword (data) {
+    return handleService(url.changePassword, data, 'post')
   }
 }
