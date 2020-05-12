@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import loginService from '@/services/login.service'
+// import loginService from '@/services/login.service'
 import { mapMutations } from 'vuex'
 export default {
   name: 'TopBar',
@@ -52,11 +52,11 @@ export default {
       this.$router.push(menu.url)
     },
     async exit () {
-      let res = await loginService.logout()
-      if (res.status === 0) {
-        this.SET_SHOW_PAGE(false)
-        this.$router.push('/login')
-      }
+      // let res = await loginService.logout()
+      // if (res.status === 0) {
+      this.SET_SHOW_PAGE(false)
+      this.$router.push('/login')
+      // }
     }
   }
 }
