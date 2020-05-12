@@ -20,6 +20,11 @@
               <i class="el-icon-lock form-icon"></i>
               <el-input type="password" placeholder="请输入密码" v-model="form.password" @keyup.enter.native="login"></el-input>
             </el-form-item>
+            <el-form-item prop="code">
+              <i class="el-icon-lock form-icon"></i>
+              <el-input type="password" placeholder="请输入验证码" v-model="form.code" @keyup.enter.native="login" style="width:150px"></el-input>
+              <Identify :identifyCode="identifyCode" @click.native="randomStr"/>
+            </el-form-item>
             <div style="padding:0 40px;display:flex;justify-content:space-between">
               <el-checkbox v-model="rememberPwd">记住密码</el-checkbox>
               <div style="font-size:14px;cursor:pointer" @click="forgetPwd">忘记密码</div>
@@ -68,6 +73,7 @@
 
 <script>
 import loginService from '@/services/login.service'
+import Identify from '@/components/Identify'
 // import axios from 'axios'
 export default {
   name: 'Login',
@@ -90,6 +96,7 @@ export default {
       rememberPwd: false, // 是否记住密码
       getCodeDisabled: false, // 倒计时时禁用
       getCodeText: '获取验证码', // 后去验证码
+      identifyCode: '',
       imgCaptcha: '',
       // 表单控件
       form: {
@@ -113,6 +120,9 @@ export default {
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'change' }
+        ],
+        code: [
+          { required: true, message: '请输入验证码', trigger: 'change' }
         ]
       },
       findRules: {
@@ -143,12 +153,18 @@ export default {
       this.form.password = window.localStorage.getItem('password')
       this.rememberPwd = Boolean(window.localStorage.getItem('rememberMe'))
     }
+    this.randomStr()
   },
   methods: {
     // 登录
     login () {
       this.$refs.loginForm.validate(async valid => {
         if (valid) {
+          if (this.form.code !== this.identifyCode) {
+            this.$message.error('验证码错误')
+            this.randomStr()
+            return
+          }
           let res = await loginService.login({
             loginName: this.form.userName,
             password: this.form.password,
@@ -167,6 +183,8 @@ export default {
               window.localStorage.removeItem('rememberMe')
             }
             this.$router.push('/home')
+          } else {
+            this.randomStr()
           }
         }
       })
@@ -267,7 +285,32 @@ export default {
           this.formIndex = 1
           break
       }
+    },
+    // 范围随机数
+    random (max, min) {
+      return Math.round(Math.random() * (max - min) + min)
+    },
+    // 封装，以便日后使用。
+    randomStr () {
+      // 创建一个空字符，用于存放随机数/字母
+      var strData = ''
+      // 生成随机字符库 (验证码四位，随机数三种，取公倍数12,所以循环4次。也可以是120次，1200次。)
+      for (var i = 0; i < 4; i++) {
+        var num = this.random(0, 9) // 生成0-9的随机数
+        var az = String.fromCharCode(this.random(97, 122))// 生成a-z
+
+        strData = strData + num + az// 将生成的字符进行字符串拼接
+      }
+      // 开始真正的随机(从随机字符库中随机取出四个)
+      var str = ''
+      for (var j = 0; j < 4; j++) {
+        str += strData[this.random(0, strData.length - 1)]
+      }
+      this.identifyCode = str
     }
+  },
+  components: {
+    Identify
   }
 }
 </script>
@@ -281,8 +324,8 @@ export default {
   justify-content: center;
   align-items: center;
   .login-box {
-    width: 800px;
-    height: 400px;
+    width: 900px;
+    height: 450px;
     display: flex;
     .logo {
       background: #fff;

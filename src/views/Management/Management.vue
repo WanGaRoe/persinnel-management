@@ -304,6 +304,8 @@ export default {
       })
       if (res.status === 0) {
         this.$message.success('调出成功')
+        this.dialogVisible = false
+        this.getPersonList()
       }
     },
     // 内部调动
