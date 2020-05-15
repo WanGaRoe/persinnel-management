@@ -52,7 +52,7 @@
       :width="dialogWidth"
       @close="handleClose">
       <div class="dialog-content">
-        <el-form v-if="dialogType === 'add'" :model="formData" ref="form" :rules="rules" label-width="90px">
+        <el-form v-show="dialogType === 'add'" :model="formData" ref="form" :rules="rules" label-width="90px">
           <el-row>
             <el-col :span="formCol">
               <el-form-item
@@ -160,7 +160,7 @@
           </el-row>
         </el-form>
         <el-table
-          v-if="dialogType === 'log'"
+          v-show="dialogType === 'log'"
           v-loading="dialogTableLoading"
           :data="dialogTableData"
           style="width: 100%">
@@ -275,6 +275,9 @@ export default {
       this.dialogWidth = '50%'
       this.dialogType = 'add'
       this.dialogVisible = true
+      this.$nextTick(() => {
+        this.$refs.form.resetFields()
+      })
     },
     onSave () {
       this.$refs.form.validate(async valid => {
@@ -301,7 +304,7 @@ export default {
             })
           }
           if (res.status === 0) {
-            this.$refs.form.resetFields()
+            // this.$refs.form.resetFields()
             this.dialogVisible = false
             this.getPersonList()
           }

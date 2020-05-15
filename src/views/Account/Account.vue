@@ -105,7 +105,7 @@
                 <el-input v-model="formData.telephone" placeholder="请输入手机号"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="formCol">
+            <el-col :span="formCol" v-if="dialogType === 'add'">
               <el-form-item
                 label="密码"
                 prop="password"
@@ -113,7 +113,7 @@
                 <el-input v-model="formData.password" type="password" placeholder="请输入密码"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="formCol">
+            <el-col :span="formCol" v-if="dialogType === 'add'">
               <el-form-item
                 label="确认密码"
                 prop="rePassword"
@@ -239,6 +239,7 @@ export default {
     handleAdd () {
       this.id = ''
       this.dialogVisible = true
+      this.dialogType = 'add'
       this.dialogTitle = '新增账号'
     },
     onSave () {
@@ -259,7 +260,6 @@ export default {
               id: this.id,
               loginName: this.formData.loginName,
               name: this.formData.name,
-              password: this.formData.password,
               roleId: this.formData.roleId,
               sex: this.formData.sex,
               telephone: this.formData.telephone
@@ -280,6 +280,7 @@ export default {
     },
     handleEdit (row) {
       this.dialogTitle = '编辑帐号'
+      this.dialogType = 'modify'
       this.id = row.id
       this.dialogVisible = true
       this.formData.loginName = row.loginName
@@ -292,7 +293,7 @@ export default {
       this.id = row.id
       this.dialogType = 'reset'
       this.dialogContent = '是否重置密码'
-      this.dialogVisible = true
+      this.deleteVisible = true
     },
     handleDelete (row) {
       this.id = row.id
@@ -302,8 +303,9 @@ export default {
     },
     async deleteOk () {
       if (this.dialogType === 'reset') {
-        let res = await accountService.resetPassword({
-          id: this.id
+        let res = await accountService.updateUser({
+          id: this.id,
+          password: '666666'
         })
         if (res.status === 0) {
           this.$message.success('重置成功')

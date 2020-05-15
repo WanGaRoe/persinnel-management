@@ -11,10 +11,10 @@
             placeholder="选择月"
             @change="monthChange"
             format="yyyy-MM"
-            value-format="yyyy-MM-dd HH:mm:ss"
+            value-format="yyyy-MM"
             >
           </el-date-picker>
-          <el-select v-model="monthInOut" style="margin-left: 20px" clearable>
+          <el-select v-model="monthInOut" style="margin-left: 20px" @change="monthTypeChange">
             <el-option value="调入">调入</el-option>
             <el-option value="调出">调出</el-option>
           </el-select>
@@ -31,10 +31,10 @@
             placeholder="选择年"
             @change="yearChange"
             format="yyyy"
-            value-format="yyyy-MM-dd HH:mm:ss"
+            value-format="yyyy"
             >
           </el-date-picker>
-          <el-select v-model="yearInOut" style="margin-left: 20px" clearable>
+          <el-select v-model="yearInOut" style="margin-left: 20px" @change="yearTypeChange">
             <el-option value="调入">调入</el-option>
             <el-option value="调出">调出</el-option>
           </el-select>
@@ -56,24 +56,40 @@ export default {
   name: 'Home',
   data () {
     return {
-      monthCount: (new Date()).getFullYear() + '-' + ((new Date()).getMonth() + 1),
+      monthCount: (new Date()).getFullYear() + '-' + (((new Date()).getMonth() + 1) < 10 ? '0' + ((new Date()).getMonth() + 1) : ((new Date()).getMonth() + 1)),
       yearCount: (new Date()).getFullYear().toString(),
       // monthCount: '',
       // yearCount: '',
       monthInOut: '调入',
       yearInOut: '调入',
       monthChart: '',
-      yearChart: ''
+      yearChart: '',
+      monthX: [],
+      monthY: [],
+      yearX: [],
+      yearY: []
     }
   },
-  mounted () {
+  async mounted () {
     this.monthChart = echarts.init(document.getElementById('monthStatistics'))
     this.yearChart = echarts.init(document.getElementById('yearStatistics'))
-    this.getMonthStatistics()
+    await this.getData()
     this.getMonthStatistic()
     this.getYearStatistic()
   },
   methods: {
+    monthTypeChange () {
+      this.getMonthStatistics()
+    },
+
+    yearTypeChange () {
+      this.getYearStatistics()
+    },
+
+    getData () {
+      this.getMonthStatistics()
+      this.getYearStatistics()
+    },
     // 获取统计数据
     getMonthStatistic () {
       var option = {
@@ -83,16 +99,16 @@ export default {
         },
         tooltip: {},
         legend: {
-          data: ['销量']
+          data: ['人数']
         },
         xAxis: {
-          data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
+          data: this.monthX
         },
         yAxis: {},
         series: [{
-          name: '销量',
+          name: '人数',
           type: 'bar',
-          data: [5, 20, 36, 10, 10, 20]
+          data: this.monthY
         }]
       }
       this.monthChart.setOption(option)
@@ -104,42 +120,48 @@ export default {
         },
         tooltip: {},
         legend: {
-          data: ['销量']
+          data: ['人数']
         },
         xAxis: {
-          data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
+          data: this.yearX
         },
         yAxis: {},
         series: [{
-          name: '销量',
+          name: '人数',
           type: 'bar',
-          data: [5, 20, 36, 10, 10, 20]
+          data: this.yearY
         }]
       }
       this.yearChart.setOption(option)
     },
     // 获取月统计
     async getMonthStatistics () {
+      this.monthChart.showLoading()
       let res = await personService.getStaffStatistics({
-        type: 1,
-        // start: this.monthCount,
-        // end: this.monthCount
-        start: '2020-05-12 00:00:00',
-        end: '2020-05-12 23:59:59'
+        type: this.monthInOut === '调入' ? 1 : 2,
+        start: this.monthCount + '-01 00:00:00',
+        end: this.monthCount + '-31 23:59:59'
       })
+      this.monthChart.hideLoading()
       if (res.status === 0) {
-
+        this.monthY = res.data.map(item => item.count)
+        this.monthX = res.data.map(item => item.name)
+        this.getMonthStatistic()
       }
     },
     // 获取年统计
     async getYearStatistics () {
+      this.yearChart.showLoading()
       let res = await personService.getStaffStatistics({
-        type: 1,
-        start: '2020-01-01 00:00:00',
-        end: '2020-05-11 23:59:59'
+        type: this.yearInOut === '调入' ? 1 : 2,
+        start: this.yearCount + '-01-01 00:00:00',
+        end: this.yearCount + '-12-31 23:59:59'
       })
+      this.yearChart.hideLoading()
       if (res.status === 0) {
-
+        this.yearY = res.data.map(item => item.count)
+        this.yearX = res.data.map(item => item.name)
+        this.getYearStatistic()
       }
     },
     // 月份改变
@@ -150,6 +172,7 @@ export default {
     // 年份改变
     yearChange (year) {
       console.log(year)
+      this.getYearStatistics()
     }
   },
   components: {
