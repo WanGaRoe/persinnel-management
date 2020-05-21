@@ -30,6 +30,7 @@
           <el-table-column label="操作" width="200">
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+              <el-button type="text" size="small" @click="handleTransfer(scope.row)">调动</el-button>
               <el-button type="text" size="small" @click="handleTransferLog(scope.row)">调动记录</el-button>
               <el-button type="text" size="small" @click="handleDelete(scope.row)">调出</el-button>
             </template>
@@ -52,9 +53,9 @@
       :width="dialogWidth"
       @close="handleClose">
       <div class="dialog-content">
-        <el-form v-show="dialogType === 'add'" :model="formData" ref="form" :rules="rules" label-width="90px">
+        <el-form v-show="dialogType === 'edit' ||dialogType === 'add' || dialogType === 'transfer'" :model="formData" ref="form" :rules="rules" label-width="90px">
           <el-row>
-            <el-col :span="formCol">
+            <el-col :span="formCol" v-if="!isTransfer">
               <el-form-item
                 label="姓名"
                 prop="name"
@@ -62,7 +63,7 @@
                 <el-input v-model="formData.name" placeholder="请输入姓名"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="formCol">
+            <el-col :span="formCol" v-if="!isTransfer">
               <el-form-item
                 label="性别"
                 prop="sex"
@@ -73,9 +74,9 @@
               </el-radio-group>
               </el-form-item>
             </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="formCol">
+          <!-- </el-row>
+          <el-row> -->
+            <el-col :span="formCol" v-if="!isTransfer">
               <el-form-item
                 label="出生日期"
                 prop="birth"
@@ -90,7 +91,7 @@
               </el-date-picker>
               </el-form-item>
             </el-col>
-            <el-col :span="formCol">
+            <el-col :span="formCol" v-if="isTransfer || dialogType === 'add'">
               <el-form-item
                 label="单位"
                 prop="departId"
@@ -109,9 +110,9 @@
                 </el-select>
               </el-form-item>
             </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="formCol">
+          <!-- </el-row>
+          <el-row> -->
+            <el-col :span="formCol" v-if="!isTransfer">
               <el-form-item
                 label="民族"
                 prop="nation"
@@ -130,7 +131,7 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="formCol">
+            <el-col :span="formCol" v-if="isTransfer || dialogType === 'add'">
               <el-form-item
                 label="工资"
                 prop="slavery"
@@ -177,6 +178,7 @@ export default {
       dialogVisible: false,
       deleteVisible: false,
       tableLoading: false,
+      isTransfer: false,
       dialogType: 'add',
       dialogTitle: '新增帐号',
       dialogWidth: '50%',
@@ -228,6 +230,16 @@ export default {
     this.getDepartment()
   },
   methods: {
+    handleTransfer (row) {
+      this.dialogTitle = '人员调动'
+      this.dialogWidth = '50%'
+      this.dialogType = 'transfer'
+      this.isTransfer = true
+      this.id = row.id
+      this.dialogVisible = true
+      this.formData.departId = row.departId
+      this.formData.slavery = row.slavery
+    },
     // 获取单位
     async getDepartment () {
       let res = await personService.getDepList()
@@ -243,15 +255,14 @@ export default {
     handleEdit (row) {
       this.dialogTitle = '编辑人员'
       this.dialogWidth = '50%'
-      this.dialogType = 'add'
+      this.dialogType = 'edit'
       this.id = row.id
       this.dialogVisible = true
+      this.isTransfer = false
       this.formData.name = row.name
       this.formData.sex = row.sex
-      this.formData.departId = row.departId
       this.formData.nation = row.nation
       this.formData.birth = row.birth
-      this.formData.slavery = row.slavery
     },
     // 调入
     handleAdd () {
@@ -259,6 +270,7 @@ export default {
       this.dialogWidth = '50%'
       this.dialogType = 'add'
       this.dialogVisible = true
+      this.isTransfer = false
       this.$nextTick(() => {
         this.$refs.form.resetFields()
       })
@@ -277,20 +289,23 @@ export default {
               birth: this.formData.birth
             })
           } else {
-            res = await personService.updateStaff({
-              id: this.id,
-              name: this.formData.name,
-              sex: this.formData.sex,
-              departId: this.formData.departId,
-              nation: this.formData.nation,
-              slavery: this.formData.slavery,
-              birth: this.formData.birth
-            })
-            await personService.staffInnerTransfer({
-              staffId: this.id,
-              slave: this.formData.slavery,
-              transFerDepartId: this.formData.departId
-            })
+            if (this.dialogType === 'transfer') {
+              res = await personService.staffInnerTransfer({
+                staffId: this.id,
+                slave: this.formData.slavery,
+                transFerDepartId: this.formData.departId
+              })
+            } else {
+              res = await personService.updateStaff({
+                id: this.id,
+                name: this.formData.name,
+                sex: this.formData.sex,
+                departId: this.formData.departId,
+                nation: this.formData.nation,
+                slavery: this.formData.slavery,
+                birth: this.formData.birth
+              })
+            }
           }
           if (res.status === 0) {
             // this.$refs.form.resetFields()

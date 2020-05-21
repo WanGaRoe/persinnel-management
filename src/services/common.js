@@ -1,11 +1,3 @@
-/*
- * @Author: your name
- * @Date: 2020-05-12 21:10:49
- * @LastEditTime: 2020-05-21 16:09:55
- * @LastEditors: your name
- * @Description: In User Settings Edit
- * @FilePath: \persinnel-management\src\services\common.js
- */
 import axios from 'axios'
 // import router from '../router'
 import { Message, Notification } from 'element-ui'
