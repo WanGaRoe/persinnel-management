@@ -61,7 +61,7 @@
           <div style="text-align:center;padding-top:20px">
             <el-button v-if="formIndex === 1" type="primary" style="width:80%" @click="login" :loading="btnLoading">登录</el-button>
             <div v-else>
-              <el-button style="width:40%" @click="formIndex--">上一步</el-button>
+              <el-button style="width:40%" @click="formIndex--" v-if="formIndex !== 4">上一步</el-button>
               <el-button type="primary" style="width:40%" @click="next">{{forgetBtn}}</el-button>
             </div>
           </div>
