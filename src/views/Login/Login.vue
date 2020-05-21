@@ -59,7 +59,7 @@
           </el-form>
           <div v-show="formIndex === 4" class="find-content">找回密码成功</div>
           <div style="text-align:center;padding-top:20px">
-            <el-button v-if="formIndex === 1" type="primary" style="width:80%" @click="login">登录</el-button>
+            <el-button v-if="formIndex === 1" type="primary" style="width:80%" @click="login" :loading="btnLoading">登录</el-button>
             <div v-else>
               <el-button style="width:40%" @click="formIndex--">上一步</el-button>
               <el-button type="primary" style="width:40%" @click="next">{{forgetBtn}}</el-button>
@@ -94,6 +94,7 @@ export default {
       forgetBtn: '下一步', // 找回密码按钮显示文字
       loginTitle: '用户登录', // 登录标题
       rememberPwd: false, // 是否记住密码
+      btnLoading: false, // 登录loading
       getCodeDisabled: false, // 倒计时时禁用
       getCodeText: '获取验证码', // 后去验证码
       identifyCode: '',
@@ -165,26 +166,34 @@ export default {
             this.randomStr()
             return
           }
-          let res = await loginService.login({
+          this.btnLoading = true
+          let result = await loginService.login({
             loginName: this.form.userName,
             password: this.form.password,
             rememberMe: this.rememberPwd
           })
-          if (res.status === 0) {
-            // console.log(res)
-            window.sessionStorage.setItem('loginName', res.data.loginName)
-            window.sessionStorage.setItem('id', res.data.id)
-            if (this.rememberPwd) {
-              window.localStorage.setItem('userName', this.form.userName)
-              window.localStorage.setItem('password', this.form.password)
-              window.localStorage.setItem('rememberMe', this.rememberPwd)
+          if (result.status === 0) {
+            let res = await loginService.getInformation()
+            this.btnLoading = false
+            if (res.status === 0) {
+              // console.log(res)
+              window.sessionStorage.setItem('loginName', res.data.loginName)
+              window.sessionStorage.setItem('id', res.data.id)
+              if (this.rememberPwd) {
+                window.localStorage.setItem('userName', this.form.userName)
+                window.localStorage.setItem('password', this.form.password)
+                window.localStorage.setItem('rememberMe', this.rememberPwd)
+              } else {
+                window.localStorage.removeItem('userName')
+                window.localStorage.removeItem('password')
+                window.localStorage.removeItem('rememberMe')
+              }
+              this.$router.push('/home')
             } else {
-              window.localStorage.removeItem('userName')
-              window.localStorage.removeItem('password')
-              window.localStorage.removeItem('rememberMe')
+              this.randomStr()
             }
-            this.$router.push('/home')
           } else {
+            this.btnLoading = false
             this.randomStr()
           }
         }
