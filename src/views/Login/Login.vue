@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <div class="login-box">
-      <div class="logo">
+      <div class="logo hidden-sm-and-down">
         <img src="../../assets/logo.png" alt="logo" style="width: 400px">
       </div>
       <div class="form">
@@ -325,7 +325,7 @@ export default {
   justify-content: center;
   align-items: center;
   .login-box {
-    width: 900px;
+    max-width: 900px;
     height: 450px;
     display: flex;
     .logo {
@@ -334,6 +334,7 @@ export default {
       align-items: center;
     }
     .form {
+      min-width: 450px;
       width: 100%;
       border-left: 1px solid #333;
       background: #fff;

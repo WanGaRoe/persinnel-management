@@ -15,7 +15,7 @@
         <el-table
           v-loading="tableLoading"
           :data="tableData"
-          style="width: 100%">
+          style="">
           <el-table-column prop="name" label="姓名"></el-table-column>
           <el-table-column prop="sex" label="性别">
             <template slot-scope="scope">
@@ -111,25 +111,6 @@
             </el-col>
           </el-row>
           <el-row>
-            <!-- <el-col :span="formCol">
-              <el-form-item
-                label="工种"
-                prop="status"
-              >
-                <el-select
-                  v-model="formData.status"
-                  placeholder="请选择工种"
-                  style="width: 100%;"
-                >
-                  <el-option
-                    v-for="(item,index) in workTypeOptions"
-                    :key="index"
-                    :label="item"
-                    :value="item"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col> -->
             <el-col :span="formCol">
               <el-form-item
                 label="民族"
@@ -164,7 +145,11 @@
           v-loading="dialogTableLoading"
           :data="dialogTableData"
           style="width: 100%">
-          <el-table-column prop="beforeDepartName" label="原单位"></el-table-column>
+          <el-table-column prop="beforeDepartName" label="原单位">
+            <template slot-scope="scope">
+              {{ scope.row.beforeDepartName === '科室null已删除' ? '无' : scope.row.beforeDepartName }}
+            </template>
+          </el-table-column>
           <el-table-column prop="afterDepartName" label="现单位"></el-table-column>
           <el-table-column prop="beforeSalve" label="原薪资"></el-table-column>
           <el-table-column prop="afterSalve" label="现薪资"></el-table-column>
@@ -248,7 +233,6 @@ export default {
       let res = await personService.getDepList()
       if (res.status === 0) {
         this.departOptions = res.data
-        console.log(this.departOptions)
       }
     },
 
@@ -302,6 +286,11 @@ export default {
               slavery: this.formData.slavery,
               birth: this.formData.birth
             })
+            await personService.staffInnerTransfer({
+              staffId: this.id,
+              slave: this.formData.slavery,
+              transFerDepartId: this.formData.departId
+            })
           }
           if (res.status === 0) {
             // this.$refs.form.resetFields()
@@ -332,6 +321,7 @@ export default {
     },
     // 调动日志
     handleTransferLog (row) {
+      this.dialogTitle = '调动记录'
       this.id = row.id
       this.dialogType = 'log'
       this.dialogWidth = '60%'
@@ -381,6 +371,7 @@ export default {
 .management {
   .info-table {
     padding: 20px 0;
+    box-sizing: border-box;
     .el-input {
       width: 300px;
     }

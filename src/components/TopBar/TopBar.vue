@@ -4,7 +4,7 @@
       <div class="logo">
         <img src="../../assets/top-logo.png" alt="" style="vertical-align:middle">
       </div>
-      <div class="content">今天也要努力呀！</div>
+      <div class="content hidden-md-and-down">今天也要努力呀！</div>
       <div class="menu">
         <el-popover
           placement="bottom"

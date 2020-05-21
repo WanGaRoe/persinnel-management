@@ -2,17 +2,21 @@
   <div>
     <template v-for="(item,index) in menuList">
       <el-menu-item v-show="item.own === 1" :class="{'menu-item-active-background':active===item.url}" class="sn-menu-item" v-if="!item.child||item.child.length===0" :index="item.url" :key="index">
+        <i :class="item.name | filterIcon"></i>
         <span class="sn-menu-item-title" :class="{spacing:item.name.length===2}" slot="title">
           {{item.name}}
         </span>
       </el-menu-item>
       <el-submenu v-show="item.own === 1" class="sn-menu-item" v-else :key="index" :index="item.id + ''">
         <template slot="title">
-          <span class="sn-menu-item-title">
+          <i :class="item.name | filterIcon"></i>
+          <span class="sn-menu-item-title" v-if="!isCollapes">
             {{item.name}}
           </span>
         </template>
-        <menu-item v-if="item.child" :menuList="item.child" style="text-indent:40px"></menu-item>
+        <el-menu-item-group>
+          <menu-item v-if="item.child" :menuList="item.child" style="text-indent:40px"></menu-item>
+        </el-menu-item-group>
       </el-submenu>
     </template>
   </div>
@@ -37,11 +41,29 @@ export default {
     }
   },
   props: {
-    menuList: Array
+    menuList: Array,
+    isCollapes: Boolean
   },
   filters: {
     toImgUrl (val) {
       return val + '?' + new Date().getTime()
+    },
+    filterIcon (val) {
+      let icon = ''
+      switch (val) {
+        case '首页统计':
+          icon = 'el-icon-s-home'
+          break
+        case '人员管理':
+          icon = 'el-icon-user-solid'
+          break
+        case '系统管理':
+          icon = 'el-icon-s-tools'
+          break
+        default:
+          break
+      }
+      return icon
     }
   }
 }

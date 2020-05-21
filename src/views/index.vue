@@ -32,15 +32,15 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 .main {
   height: 100%;
   .main-body {
     height: calc(100% - 120px);
     display: flex;
     .content-bar {
+      width: calc(100% - 110px);
       padding: 20px;
-      flex: 1;
     }
   }
 }

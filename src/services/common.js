@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-05-12 21:10:49
+ * @LastEditTime: 2020-05-21 16:09:55
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \persinnel-management\src\services\common.js
+ */
 import axios from 'axios'
 // import router from '../router'
 import { Message, Notification } from 'element-ui'
@@ -7,14 +15,6 @@ import router from '../router'
  * 用于处理需要在请求前的操作
  */
 axios.interceptors.request.use(config => {
-  // return config
-  if (window.localStorage.getItem('token')) {
-    if (config.url !== '/upload') {
-      config.headers.Authorization = window.localStorage.getItem('token')
-    }
-  } else {
-    // router.replace('/login')
-  }
   return config
 }, function (error) {
   return Promise.reject(error)

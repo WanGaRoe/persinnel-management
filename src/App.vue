@@ -11,8 +11,7 @@
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   height: 100%;
-  min-width: 1920px;
-  
+  min-width: 700px;
 }
 
 body, html {

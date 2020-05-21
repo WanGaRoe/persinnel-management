@@ -1,12 +1,13 @@
 <template>
-  <div class="left-bar">
+  <div :class="{'left-bar': true, 'width256': !isCollapes}">
     <el-menu
+      :collapse="isCollapes"
       :default-active="active"
       @select="onSelect"
       text-color="#c172f46"
       unique-opened
     >
-      <menu-item :menuList="leftNav"></menu-item>
+      <menu-item :menuList="leftNav" :isCollapes="isCollapes"></menu-item>
     </el-menu>
   </div>
 </template>
@@ -19,11 +20,23 @@ export default {
   name: 'LeftBar',
   data () {
     return {
-      leftNav: []
+      leftNav: [],
+      isCollapes: false,
+      screenWidth: 0
     }
   },
   mounted () {
     this.getMenu()
+    const that = this
+    if (document.body.clientWidth < 992) {
+      that.isCollapes = true
+    }
+    window.onresize = () => {
+      return (() => {
+        window.screenWidth = document.body.clientWidth
+        that.screenWidth = window.screenWidth
+      })()
+    }
   },
   computed: {
     active () {
@@ -35,7 +48,26 @@ export default {
       return path
     }
   },
-
+  watch: {
+    screenWidth (val) {
+      // 为了避免频繁触发resize函数导致页面卡顿，使用定时器
+      if (!this.timer) {
+        // 一旦监听到的screenWidth值改变，就将其重新赋给data里的screenWidth
+        this.screenWidth = val
+        this.timer = true
+        let that = this
+        setTimeout(function () {
+          // 打印screenWidth变化的值
+          that.timer = false
+          if (that.screenWidth < 992) {
+            that.isCollapes = true
+          } else {
+            that.isCollapes = false
+          }
+        }, 100)
+      }
+    }
+  },
   methods: {
     ...mapMutations(['SET_SHOW_PAGE']),
     // 点击菜单
@@ -85,14 +117,21 @@ export default {
 </script>
 
 <style lang="less">
-.left-bar {
+.width256{
   width: 256px;
+};
+.left-bar {
+  // width: 256px;
   height: 100%;
   display: flex;
   text-align: center;
   font-size: 20px;
   flex-direction: column;
   align-items: center;
+  .el-menu-vertical-demo:not(.el-menu--collapse) {
+    width: 256px;
+    min-height: 400px;
+  }
   .el-menu {
     // margin-top: 60px;
     height: 100%;
