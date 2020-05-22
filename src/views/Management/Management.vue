@@ -25,7 +25,7 @@
           <el-table-column prop="nation" label="民族"></el-table-column>
           <el-table-column prop="departName" label="单位"></el-table-column>
           <!-- <el-table-column prop="role" label="工种"></el-table-column> -->
-          <el-table-column prop="birth" label="入职日期"></el-table-column>
+          <el-table-column prop="birth" label="出生日期"></el-table-column>
           <el-table-column prop="slavery" label="工资"></el-table-column>
           <el-table-column label="操作" width="200">
             <template slot-scope="scope">
@@ -43,7 +43,7 @@
           :current-page="pageIndex"
           @current-change="currentChange"
           layout="prev, pager, next"
-          :total="tableData.length">
+          :total="total">
         </el-pagination>
       </div>
     </div>
@@ -178,6 +178,7 @@ export default {
       dialogVisible: false,
       deleteVisible: false,
       tableLoading: false,
+      total: 0,
       isTransfer: false,
       dialogType: 'add',
       dialogTitle: '新增帐号',
@@ -371,6 +372,7 @@ export default {
       this.tableLoading = false
       if (res.status === 0) {
         this.tableData = res.data.records
+        this.total = res.data.total
         console.log(res)
       }
     }

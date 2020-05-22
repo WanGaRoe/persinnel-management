@@ -11,6 +11,7 @@
       <div class="table">
         <el-table
           v-loading="tableLoading"
+          :page-size="tableData.length"
           :data="tableData"
           style="width: 100%">
           <el-table-column prop="name" label="角色名称"></el-table-column>

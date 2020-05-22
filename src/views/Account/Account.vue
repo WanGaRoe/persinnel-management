@@ -34,7 +34,7 @@
           :current-page="pageIndex"
           @current-change="currentChange"
           layout="prev, pager, next"
-          :total="tableData.length">
+          :total="total">
         </el-pagination>
       </div>
     </div>
@@ -156,6 +156,7 @@ export default {
       dialogVisible: false,
       deleteVisible: false,
       tableLoading: false,
+      total: 0,
       dialogTitle: '新增帐号',
       dialogContent: '',
       dialogType: 'delete',
@@ -228,6 +229,7 @@ export default {
       this.tableLoading = false
       if (res.status === 0) {
         this.tableData = res.data.records
+        this.total = res.data.total
       }
     },
 
